@@ -9,9 +9,11 @@ Valid values of `Bits`: $2^n$, where $n > 0$ and $\text{Bits} \ge \text{bits in 
 Valid values of `DigitT`: `uint8_t`, `uint16_t`, `uint32_t`
 (and `uint64_t` if available type `__uint128_t`, GCC extension).
 
+For multiplication use, the Karatsuba algorithm.
+
 ## Namespace `fwnbi`
 
-### Class `basic_integer<...>`
+### Class `basic_integer<size_t Bits, class DigitT, bool Signed>`
 
 **Types:**  
 `digit_type` - equal template parameter `DigitT`  
@@ -41,6 +43,10 @@ Valid values of `DigitT`: `uint8_t`, `uint16_t`, `uint32_t`
 `basic_integer<TnBits, ...>` *explicit* - narrow bit width, $\text{TnBits} < \text{Bits}$  
 `basic_integer<OtherDigitT, ...>` - change digit type, $\text{OtherDigitT} \ne \text{DigitT}$
 
+**Comparison:**  
+`int compare(const basic_integer<...>&)` - 3-way comparison  
+`std::strong_ordering operator<=>(const basic_integer<...>&)` *since C++20* - standard 3-way comparison
+
 **Support methods:**  
 `bool sign_bit()` - return value of MSB  
 `int sign()` - n > 0 => +1, n = 0 => 0, n < 0 => -1  
@@ -55,3 +61,45 @@ Valid values of `DigitT`: `uint8_t`, `uint16_t`, `uint32_t`
 `bool add_with_carry(const basic_integer<...>&, bool = false)` - add first and second argument to integer and return carry  
 `bool add_with_carry(digit_type, bool = false)` - add first and second argument to integer and return carry  
 `void swap(basic_integer<...>&)` - swap value of current integer and argument
+
+**Additional operators:**  
+`digit_type& operator[](size_t)` - return digit by index  
+`<<`, `>>`, `<<=`, `>>=` - if count is negative turn left/right to right/left
+
+### Functions
+
+`abs` - return absolute value of integer  
+`rotl`/`rotr` - bit rotation, if count is negative turn left/right to right/left  
+`clz` - return count `0`-bit from MSB to before first `1`-bit  
+`ctz` - return count `0`-bit from LSB to before first `1`-bit  
+`popcount` - return count of `1`-bit in integer  
+`sqr` - return square of integer with twice width  
+`isqrt` - return `floor(sqrt(x))` of integer  
+`gcd` - return greate common divisor  
+`lcm` - return least common multiplier
+
+### Default provided type aliases
+
+`uintN_t<Bits, DigitT = uint32_t>`/`intN_t<Bits, DigitT = uint32_t>` - aliases with preset signedness  
+`uint128_t`/`uint256_t`/`uint512_t`/`uint1024_t` - unsigned aliases  
+`int128_t`/`int256_t`/`int512_t`/`int1024_t` - signed aliases
+
+## Namespace `fwnbi::literals`
+
+`_ull128`/`_ull256`/`_ull512`/`_ull1024` - unsigned  
+`_ll128`/`_ll256`/`_ll512`/`_ll1024` - signed
+
+## Namespace `std`
+
+`void swap(...)` - swapping to integers  
+`struct numeric_limits` - information about `basic_integer<...>`  
+`struct is_integral` - return `true`  
+`struct is_unsigned`/`struct is_signed` - answer by question  
+`struct make_unsigned`/`struct make_signed` - return type  
+`struct hash` - calculate function FNVa-64 for bytes in integer  
+`std::string to_string(...)` - convert integer to `std::string`  
+`... operator<<(...)` - output to `std::basic_ostream<...>`  
+`... operator>>(...)` - input from `std::basic_istream<...>`  
+`... to_chars(...)` *since C++17* - fast convert to string  
+`... from_chars(...)` *since C++17* - fast convert from string  
+`struct formatter<...>` *since C++20* - helper class for format library
