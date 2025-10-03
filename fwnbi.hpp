@@ -33,6 +33,19 @@ namespace fwnbi {
 
 namespace detail {
 
+template <bool C, class T, class F>
+struct conditional             { using type = F; };
+template <        class T, class F>
+struct conditional<true, T, F> { using type = T; };
+
+template <bool C, class T, class F>
+using conditional_t = typename conditional<C, T, F>::type;
+
+using u8  = conditional_t<UINT8_MAX  == UINT_FAST8_MAX , uint_fast8_t , uint8_t >;
+using u16 = conditional_t<UINT16_MAX == UINT_FAST16_MAX, uint_fast16_t, uint16_t>;
+using u32 = conditional_t<UINT32_MAX == UINT_FAST32_MAX, uint_fast32_t, uint32_t>;
+using u64 = conditional_t<UINT64_MAX == UINT_FAST64_MAX, uint_fast64_t, uint64_t>;
+
 template <bool C, class T> struct enable_if          {                 };
 template <        class T> struct enable_if<true, T> { using type = T; };
 
@@ -40,11 +53,10 @@ template <bool B, class T>
 using enable_if_t = typename enable_if<B, T>::type;
 
 template <class T> struct make_double_digit {};
-
-template <> struct make_double_digit<uint8_t > { using type = uint16_t; };
-template <> struct make_double_digit<uint16_t> { using type = uint32_t; };
-template <> struct make_double_digit<uint32_t> { using type = uint64_t; };
-template <> struct make_double_digit<uint64_t> {
+template <> struct make_double_digit<u8 > { using type = u16; };
+template <> struct make_double_digit<u16> { using type = u32; };
+template <> struct make_double_digit<u32> { using type = u64; };
+template <> struct make_double_digit<u64> {
 #ifdef __SIZEOF_INT128__
     using type = __uint128_t;
 #endif
@@ -67,13 +79,13 @@ void reverse(T* first, T* last) {
 }
 
 #ifdef __GNUC__
-constexpr size_t popcount(uint64_t n) noexcept { return __builtin_popcountll(n); }
+constexpr size_t popcount(u64 n) noexcept { return __builtin_popcountll(n); }
 #else
-constexpr size_t popcount(uint64_t n) noexcept {
-    constexpr uint64_t m1  = 0x5555555555555555ull;
-    constexpr uint64_t m2  = 0x3333333333333333ull;
-    constexpr uint64_t m4  = 0x0F0F0F0F0F0F0F0Full;
-    constexpr uint64_t h01 = 0x0101010101010101ull;
+constexpr size_t popcount(u64 n) noexcept {
+    constexpr u64 m1  = 0x5555555555555555ull;
+    constexpr u64 m2  = 0x3333333333333333ull;
+    constexpr u64 m4  = 0x0F0F0F0F0F0F0F0Full;
+    constexpr u64 h01 = 0x0101010101010101ull;
     n -= (n >> 1) & m1;
     n = (n & m2) + ((n >> 2) & m2);
     n = (n + (n >> 4)) & m4;
@@ -82,7 +94,7 @@ constexpr size_t popcount(uint64_t n) noexcept {
 #endif
 
 #if defined(__GNUC__)
-constexpr size_t ctz(uint64_t n) noexcept { return __builtin_ctzll(n); }
+constexpr size_t ctz(u64 n) noexcept { return __builtin_ctzll(n); }
 
 template <class T>
 constexpr size_t clz(T n) noexcept {
@@ -90,7 +102,7 @@ constexpr size_t clz(T n) noexcept {
         + bitsof<T>::value : bitsof<T>::value;
 }
 #elif defined(_MSC_VER)
-constexpr size_t ctz(uint64_t n) noexcept
+constexpr size_t ctz(u64 n) noexcept
     { unsigned long out = 0; return _BitScanForward64(&out, n) ? out : 64; }
 
 template <class T>
@@ -99,7 +111,7 @@ constexpr size_t clz(T n) noexcept {
         ? bitsof<T>::value - 1 - out : bitsof<T>::value;
 }
 #else
-constexpr size_t ctz(uint64_t n) noexcept {
+constexpr size_t ctz(u64 n) noexcept {
     size_t out = 0;
     if (!n) return 64;
     for (; (n & 1) == 0; n >>= 1) ++out;
@@ -1082,9 +1094,9 @@ constexpr basic_integer<B*2, D, false> lcm(
     return lhs / gcd_res * rhs;
 }
 
-template <size_t Bits, class DigitT = uint32_t>
+template <size_t Bits, class DigitT = detail::u32>
 using uintN_t = basic_integer<Bits, DigitT, false>;
-template <size_t Bits, class DigitT = uint32_t>
+template <size_t Bits, class DigitT = detail::u32>
 using  intN_t = basic_integer<Bits, DigitT,  true>;
 
 using uint128_t  = uintN_t< 128>;
@@ -1115,22 +1127,22 @@ using  int1024_t =  intN_t<1024>;
 namespace literals {
 
 constexpr uint128_t operator""_ull128(const char* literal) noexcept
-    { return detail::from_literal<128, uint32_t, false>(literal); }
+    { return detail::from_literal<128, detail::u32, false>(literal); }
 constexpr uint256_t operator""_ull256(const char* literal) noexcept
-    { return detail::from_literal<256, uint32_t, false>(literal); }
+    { return detail::from_literal<256, detail::u32, false>(literal); }
 constexpr uint512_t operator""_ull512(const char* literal) noexcept
-    { return detail::from_literal<512, uint32_t, false>(literal); }
+    { return detail::from_literal<512, detail::u32, false>(literal); }
 constexpr uint1024_t operator""_ull1024(const char* literal) noexcept
-    { return detail::from_literal<1024, uint32_t, false>(literal); }
+    { return detail::from_literal<1024, detail::u32, false>(literal); }
 
 constexpr int128_t operator""_ll128(const char* literal) noexcept
-    { return detail::from_literal<128, uint32_t, true>(literal); }
+    { return detail::from_literal<128, detail::u32, true>(literal); }
 constexpr int256_t operator""_ll256(const char* literal) noexcept
-    { return detail::from_literal<256, uint32_t, true>(literal); }
+    { return detail::from_literal<256, detail::u32, true>(literal); }
 constexpr int512_t operator""_ll512(const char* literal) noexcept
-    { return detail::from_literal<512, uint32_t, true>(literal); }
+    { return detail::from_literal<512, detail::u32, true>(literal); }
 constexpr int1024_t operator""_ll1024(const char* literal) noexcept
-    { return detail::from_literal<1024, uint32_t, true>(literal); }
+    { return detail::from_literal<1024, detail::u32, true>(literal); }
 
 #define FWNBI_UINT128_C(literal)  literal ## _ull128
 #define FWNBI_UINT256_C(literal)  literal ## _ull256
@@ -1234,13 +1246,13 @@ string to_string(const fwnbi::basic_integer<B, D, S>& value) {
     return string(buffer, end - buffer);
 }
 
-template <size_t B, class D = uint32_t>
+template <size_t B, class D = fwnbi::detail::u32>
 constexpr fwnbi::basic_integer<B, D, true> strtoll(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, true>(str, str_end, base);
 }
 
-template <size_t B, class D = uint32_t>
+template <size_t B, class D = fwnbi::detail::u32>
 constexpr fwnbi::basic_integer<B, D, false> strtoull(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, false>(str, str_end, base);
@@ -1437,7 +1449,7 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
     enum class fmt_base { bin, oct, dec, hex } base = fmt_base::dec;
     bool use_prefix = false;
     char fill_char = ' ';
-    uint16_t width = 0;
+    uint_least16_t width = 0;
 
     template <class ParseCtx>
     constexpr ParseCtx::iterator parse(ParseCtx& ctx) {
