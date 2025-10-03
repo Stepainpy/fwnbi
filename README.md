@@ -98,6 +98,8 @@ For multiplication use, the Karatsuba algorithm.
 `struct make_unsigned`/`struct make_signed` - return type  
 `struct hash` - calculate function FNVa-64 for bytes in integer  
 `std::string to_string(...)` - convert integer to `std::string`  
+`... strtoll(...)` - convert C-string to signed integer  
+`... strtoull(...)` - convert C-string to unsigned integer  
 `... operator<<(...)` - output to `std::basic_ostream<...>`  
 `... operator>>(...)` - input from `std::basic_istream<...>`  
 `... to_chars(...)` *since C++17* - fast convert to string  

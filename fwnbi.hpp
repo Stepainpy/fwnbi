@@ -861,6 +861,39 @@ constexpr basic_integer<B, D, S> from_chars_i(
     return sign ? -out : out;
 }
 
+template <size_t B, class D, bool S>
+constexpr basic_integer<B, D, S> strto_base(
+    const char* str, char** end, int base) noexcept {
+    if (!str || base < 0 || base == 1 || base > 36)
+        return basic_integer<B, D, S>();
+
+    while (cexpr_isspace(*str)) ++str;
+    if ((base == 0 || base == 8 || base == 16) && *str == '0') {
+        ++str; int new_base = base;
+        if (base == 0) new_base = 8;
+        if ((base == 0 || base == 16) && *str == 'x')
+            { ++str; if (base == 0) new_base = 16; }
+        base = new_base;
+    }
+    if (base == 0) base = 10;
+
+    from_char_res res = from_char_res::ok;
+    basic_integer<B, D, S> out = from_chars_i<B, D, S>(
+        str, str + cexpr_strlen(str), res,
+        const_cast<const char**>(end), base
+    );
+
+    switch (res) {
+        case from_char_res::ok: return out;
+        case from_char_res::overflow:
+            return out.sign() < 0
+                ? basic_integer<B, D, S>::min()
+                : basic_integer<B, D, S>::max();
+        case from_char_res::invalid:
+            return basic_integer<B, D, S>();
+    }
+}
+
 template <class Bt, class D> struct clz_t {
     static constexpr size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
         constexpr size_t B = Bt::value;
@@ -1199,6 +1232,18 @@ string to_string(const fwnbi::basic_integer<B, D, S>& value) {
     const char* end = fwnbi::detail::to_chars_i(
         buffer, buffer + sizeof buffer, value, nullptr, 10);
     return string(buffer, end - buffer);
+}
+
+template <size_t B, class D = uint32_t>
+constexpr fwnbi::basic_integer<B, D, true> strtoll(
+    const char* str, char** str_end, int base) noexcept {
+    return fwnbi::detail::strto_base<B, D, true>(str, str_end, base);
+}
+
+template <size_t B, class D = uint32_t>
+constexpr fwnbi::basic_integer<B, D, false> strtoull(
+    const char* str, char** str_end, int base) noexcept {
+    return fwnbi::detail::strto_base<B, D, false>(str, str_end, base);
 }
 
 template <class CharT, class Traits, size_t B, class D, bool S>
