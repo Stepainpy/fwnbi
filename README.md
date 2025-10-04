@@ -32,7 +32,7 @@ For multiplication use, the Karatsuba algorithm.
 **Constructors:**  
 `basic_integer()` - default constructor (set all zero)  
 `basic_integer(digit_type)` - create integer from one digit  
-`basic_integer(digit_type (&)[digit_count])` - create integer from array of digits
+`basic_integer(const digit_type (&)[digit_count])` - create integer from array of digits
 
 **Conversions:**  
 `bool` - `true` if integer is zero, otherwise `false`  

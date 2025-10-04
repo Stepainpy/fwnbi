@@ -153,7 +153,7 @@ public:
     constexpr basic_integer& operator=(      basic_integer&&) noexcept = default;
 
     constexpr basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
-    constexpr basic_integer(digit_type (&in_digits)[digit_count]) noexcept
+    constexpr basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
         { for (size_t i = 0; i < digit_count; i++) digits[i] = in_digits[i]; }
 
 #if __cplusplus >= 202002L
