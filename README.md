@@ -68,6 +68,7 @@ For multiplication use, the Karatsuba algorithm.
 
 ### Functions
 
+`fullmul` - return 2N-bit result of multiplication N-bit integers  
 `abs` - return absolute value of integer  
 `rotl`/`rotr` - bit rotation, if count is negative turn left/right to right/left  
 `clz` - return count `0`-bit from MSB to before first `1`-bit  
