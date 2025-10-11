@@ -174,9 +174,9 @@ public:
         return false;
     }
 
-    explicit constexpr operator digit_type() const noexcept { return digits[0]; }
+    constexpr operator digit_type() const noexcept { return digits[0]; }
 
-    explicit constexpr operator double_digit_type() const noexcept {
+    constexpr operator double_digit_type() const noexcept {
         double_digit_type out = digits[0];
         if (digit_count > 1)
             out |= double_digit_type(digits[1]) << digit_width;
@@ -200,7 +200,7 @@ public:
     }
 
     template <size_t TnBits, detail::enable_if_t<(TnBits < Bits), int> = 0>
-    explicit constexpr operator basic_integer<TnBits, DigitT, Signed>() const noexcept {
+    constexpr operator basic_integer<TnBits, DigitT, Signed>() const noexcept {
         basic_integer<TnBits, DigitT, Signed> out;
         for (size_t i = 0; i < out.digit_count; i++)
             out.digits[i] = digits[i];
@@ -982,8 +982,7 @@ private:
 
 template <size_t B, class D, bool S> constexpr basic_integer<B, D, S>&
 basic_integer<B, D, S>::operator*=(const basic_integer<B, D, S>& rhs) noexcept {
-    return *this = static_cast<basic_integer<B, D, S>>(
-        detail::karatsuba<detail::size_s<B>, D, S>::calc(*this, rhs));
+    return *this = detail::karatsuba<detail::size_s<B>, D, S>::calc(*this, rhs);
 }
 
 template <size_t B, class D, bool S>

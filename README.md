@@ -36,11 +36,11 @@ For multiplication use, the Karatsuba algorithm.
 
 **Conversions:**  
 `bool` - `true` if integer is zero, otherwise `false`  
-`digit_type` *explicit* - return first digit  
-`double_digit_type` *explicit* - return first and second digit  
+`digit_type` - return first digit  
+`double_digit_type` - return first and second digit  
 `basic_integer<!Signed, ...>` - toggle sign of integer  
 `basic_integer<BgBits, ...>` - expand bit width, $\text{BgBits} > \text{Bits}$  
-`basic_integer<TnBits, ...>` *explicit* - narrow bit width, $\text{TnBits} < \text{Bits}$  
+`basic_integer<TnBits, ...>` - narrow bit width, $\text{TnBits} < \text{Bits}$  
 `basic_integer<OtherDigitT, ...>` - change digit type, $\text{OtherDigitT} \ne \text{DigitT}$
 
 **Comparison:**  
