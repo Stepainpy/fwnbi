@@ -986,6 +986,13 @@ basic_integer<B, D, S>::operator*=(const basic_integer<B, D, S>& rhs) noexcept {
 }
 
 template <size_t B, class D, bool S>
+basic_integer<B, D, S> operator+(D lhs, const basic_integer<B, D, S>& rhs)
+    noexcept { return rhs + lhs; }
+template <size_t B, class D, bool S>
+basic_integer<B, D, S> operator*(D lhs, const basic_integer<B, D, S>& rhs)
+    noexcept { return rhs * lhs; }
+
+template <size_t B, class D, bool S>
 constexpr basic_integer<B*2, D, S> fullmul(
     const basic_integer<B, D, S>& lhs, const basic_integer<B, D, S>& rhs
 ) noexcept { return detail::karatsuba<detail::size_s<B>, D, S>::calc(lhs, rhs); }
