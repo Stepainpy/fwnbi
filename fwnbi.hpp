@@ -461,6 +461,8 @@ public:
         { add_with_carry(rhs); return *this; }
     constexpr basic_integer& operator-=(const basic_integer& rhs) noexcept
         { add_with_carry(-rhs); return *this; }
+    constexpr basic_integer& operator-=(digit_type rhs) noexcept
+        { add_with_carry(-basic_integer(rhs)); return *this; }
 
     constexpr basic_integer& operator*=(const basic_integer&) noexcept;
     constexpr basic_integer& operator*=(digit_type rhs) noexcept {
@@ -474,6 +476,10 @@ public:
         { return *this = divmod(rhs).quot; }
     constexpr basic_integer& operator%=(const basic_integer& rhs) noexcept
         { return *this = divmod(rhs).rem;  }
+    constexpr basic_integer& operator/=(digit_type rhs) noexcept
+        { return *this = divmod(basic_integer(rhs)).quot; }
+    constexpr basic_integer& operator%=(digit_type rhs) noexcept
+        { return *this = divmod(basic_integer(rhs)).rem;  }
 
     constexpr basic_integer& operator&=(const basic_integer& rhs) noexcept {
         for (size_t i = 0; i < digit_count; i++)
@@ -533,8 +539,14 @@ public:
 
     constexpr basic_integer operator+(digit_type rhs) const noexcept
         { return basic_integer(*this) += rhs; }
+    constexpr basic_integer operator-(digit_type rhs) const noexcept
+        { return basic_integer(*this) -= rhs; }
     constexpr basic_integer operator*(digit_type rhs) const noexcept
         { return basic_integer(*this) *= rhs; }
+    constexpr basic_integer operator/(digit_type rhs) const noexcept
+        { return basic_integer(*this) /= rhs; }
+    constexpr basic_integer operator%(digit_type rhs) const noexcept
+        { return basic_integer(*this) %= rhs; }
 
     constexpr basic_integer operator<<(size_t shift) const noexcept
         { return basic_integer(*this) <<= shift; }
