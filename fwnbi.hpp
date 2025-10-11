@@ -649,11 +649,11 @@ struct karatsuba<typename bitsof<D>::type, D, S> {
         using int2B = basic_integer<bitsof<D>::value*2, D, S>;
         using  digit_t = typename int2B::digit_type;
         using ddigit_t = typename int2B::double_digit_type;
-        ddigit_t out =
+        int2B out; ddigit_t mul =
             static_cast<ddigit_t>(lhs[0]) * static_cast<ddigit_t>(rhs[0]);
-        digit_t lower = static_cast<digit_t>(out);
-        digit_t upper = static_cast<digit_t>(out >> int2B::digit_width);
-        return int2B{lower, upper};
+        out[0] = static_cast<digit_t>(mul);
+        out[1] = static_cast<digit_t>(mul >> int2B::digit_width);
+        return out;
     }
 };
 
