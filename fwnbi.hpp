@@ -270,7 +270,7 @@ public:
         if (index >= bit_width / 4) return;
         const size_t d_i = index * 4 / digit_width;
         const size_t h_i = index * 4 % digit_width;
-        const digit_type mask = ~(15 << h_i);
+        const digit_type mask = ~(digit_type(15) << h_i);
         (digits[d_i] &= mask) |= digit_type(value & 15) << h_i;
     }
 
