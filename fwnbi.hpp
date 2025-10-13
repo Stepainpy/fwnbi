@@ -1529,7 +1529,7 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
         char buffer[B + 4] {}, *end;
         size_t pos = 0;
 
-        if (base == fmt_base::dec && sign != fmt_sign::none) {
+        if (base == fmt_base::dec && sign != fmt_sign::none && value.sign() >= 0) {
             if (sign == fmt_sign::plus ) buffer[pos++] = '+';
             if (sign == fmt_sign::space) buffer[pos++] = ' ';
         }
