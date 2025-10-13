@@ -806,7 +806,8 @@ template <size_t B, class D, bool S> constexpr char* to_chars_i(
 }
 
 template <size_t B, class D, bool S> constexpr char* to_chars_pow2(
-    char* first, char* last, basic_integer<B, D, S> num, bool* of, int pow
+    char* first, char* last, basic_integer<B, D, S> num,
+    bool* of, int pow, bool uppercase = false
 ) noexcept {
     const D mask = (D(1) << pow) - 1;
     char* pos = first;
@@ -817,7 +818,9 @@ template <size_t B, class D, bool S> constexpr char* to_chars_pow2(
             return last;
         }
 
-        *pos++ = digit_alphabet[num[0] & mask];
+        D digit = num[0] & mask;
+        *pos++ = digit_alphabet[digit]
+            - (uppercase && digit >= 10) * 32;
         num >>= pow;
     } while (num);
 
@@ -1467,9 +1470,9 @@ constexpr from_chars_result from_chars(
 
 template <class CharT, size_t B, class D, bool S>
 struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
+    enum class fmt_base  { bin, Bin, oct, dec, hex, Hex } base = fmt_base::dec;
     enum class fmt_align { left, center, right } align = fmt_align::right;
-    enum class fmt_sign { none, plus, space } sign = fmt_sign::none;
-    enum class fmt_base { bin, oct, dec, hex } base = fmt_base::dec;
+    enum class fmt_sign  { none, plus, space } sign = fmt_sign::none;
     bool use_prefix = false;
     char fill_char = ' ';
     uint_least16_t width = 0;
@@ -1507,12 +1510,12 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
 
         if (it != ctx.end())
             switch (*it++) {
-                case 'd': base = fmt_base::dec; break;
+                case 'b': base = fmt_base::bin; break;
+                case 'B': base = fmt_base::Bin; break;
                 case 'o': base = fmt_base::oct; break;
-                case 'x':
-                case 'X': base = fmt_base::hex; break;
-                case 'b':
-                case 'B': base = fmt_base::bin; break;
+                case 'd': base = fmt_base::dec; break;
+                case 'x': base = fmt_base::hex; break;
+                case 'X': base = fmt_base::Hex; break;
                 default : --it; break;
             }
 
@@ -1534,7 +1537,9 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
         if (base != fmt_base::dec && use_prefix) {
             buffer[pos++] = '0';
             if (base == fmt_base::bin) buffer[pos++] = 'b';
+            if (base == fmt_base::Bin) buffer[pos++] = 'B';
             if (base == fmt_base::hex) buffer[pos++] = 'x';
+            if (base == fmt_base::Hex) buffer[pos++] = 'X';
         }
 
         switch (base) {
@@ -1543,6 +1548,7 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
                     buffer + sizeof buffer, value, nullptr, 10);
                 break;
             case fmt_base::bin:
+            case fmt_base::Bin:
                 end = fwnbi::detail::to_chars_pow2(buffer + pos,
                     buffer + sizeof buffer, value, nullptr, 1);
                 break;
@@ -1551,9 +1557,10 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
                     buffer + sizeof buffer, value, nullptr, 3);
                 break;
             case fmt_base::hex:
+            case fmt_base::Hex:
                 end = fwnbi::detail::to_chars_pow2(buffer + pos,
-                    buffer + sizeof buffer, value, nullptr, 4);
-                break;
+                    buffer + sizeof buffer, value, nullptr, 4,
+                    base == fmt_base::Hex); break;
         }
 
         if (width == 0)
