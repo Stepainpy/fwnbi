@@ -184,34 +184,31 @@ public:
     }
 
     constexpr operator basic_integer<Bits, DigitT, !Signed>() const noexcept {
-        basic_integer<Bits, DigitT, !Signed> out;
-        for (size_t i = 0; i < digit_count; i++)
-            out.digits[i] = digits[i];
-        return out;
+        return basic_integer<Bits, DigitT, !Signed>(digits);
     }
 
-    template <size_t BgBits, detail::enable_if_t<(BgBits > Bits), int> = 0>
-    constexpr operator basic_integer<BgBits, DigitT, Signed>() const noexcept {
-        basic_integer<BgBits, DigitT, Signed> out;
+    template <size_t BgBits, bool S, detail::enable_if_t<(BgBits > Bits), int> = 0>
+    constexpr operator basic_integer<BgBits, DigitT, S>() const noexcept {
+        basic_integer<BgBits, DigitT, S> out;
         if (sign() < 0) out = ~out;
         for (size_t i = 0; i < digit_count; i++)
             out.digits[i] = digits[i];
         return out;
     }
 
-    template <size_t TnBits, detail::enable_if_t<(TnBits < Bits), int> = 0>
-    constexpr operator basic_integer<TnBits, DigitT, Signed>() const noexcept {
-        basic_integer<TnBits, DigitT, Signed> out;
+    template <size_t TnBits, bool S, detail::enable_if_t<(TnBits < Bits), int> = 0>
+    constexpr operator basic_integer<TnBits, DigitT, S>() const noexcept {
+        basic_integer<TnBits, DigitT, S> out;
         for (size_t i = 0; i < out.digit_count; i++)
             out.digits[i] = digits[i];
         return out;
     }
 
-    template <class BgDigitT,
+    template <class BgDigitT, bool S,
         detail::enable_if_t<(sizeof(BgDigitT) > sizeof(DigitT)), int> = 0>
-    constexpr operator basic_integer<Bits, BgDigitT, Signed>() const noexcept {
+    constexpr operator basic_integer<Bits, BgDigitT, S>() const noexcept {
         const size_t ratio = sizeof(BgDigitT) / sizeof(DigitT);
-        basic_integer<Bits, BgDigitT, Signed> out;
+        basic_integer<Bits, BgDigitT, S> out;
         for (size_t i = 0; i < out.digit_count; i++)
             for (size_t j = ratio; j --> 0;) {
                 out.digits[i] <<= digit_width;
@@ -220,11 +217,11 @@ public:
         return out;
     }
 
-    template <class TnDigitT,
+    template <class TnDigitT, bool S,
         detail::enable_if_t<(sizeof(TnDigitT) < sizeof(DigitT)), int> = 0>
-    constexpr operator basic_integer<Bits, TnDigitT, Signed>() const noexcept {
+    constexpr operator basic_integer<Bits, TnDigitT, S>() const noexcept {
         const size_t ratio = sizeof(DigitT) / sizeof(TnDigitT);
-        basic_integer<Bits, TnDigitT, Signed> out;
+        basic_integer<Bits, TnDigitT, S> out;
         for (size_t i = 0; i < digit_count; i++)
             for (size_t j = 0; j < ratio; j++)
                 out.digits[i * ratio + j] = static_cast<TnDigitT>(
