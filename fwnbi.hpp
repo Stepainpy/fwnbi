@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <climits>
+#include <array>
 
 #if __cpp_impl_three_way_comparison >= 201907L
 #  include <compare>
@@ -155,6 +156,8 @@ public:
 
     constexpr basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
     constexpr basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
+        { for (size_t i = 0; i < digit_count; i++) digits[i] = in_digits[i]; }
+    constexpr basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept
         { for (size_t i = 0; i < digit_count; i++) digits[i] = in_digits[i]; }
 
 #if __cplusplus >= 202002L
