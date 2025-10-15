@@ -133,7 +133,8 @@ constexpr size_t clz(T n) noexcept {
 template <size_t Bits, class DigitT, bool Signed>
 class basic_integer {
     static_assert(!(Bits & (Bits - 1)), "Bit width isn't power of 2");
-    static_assert(Bits >= detail::bitsof<DigitT>::value, "Bit width less than bits in digit type");
+    static_assert(Bits >= detail::bitsof<DigitT>::value,
+        "Bit width less than bits in digit type");
 
 public:
     using        digit_type = DigitT;
