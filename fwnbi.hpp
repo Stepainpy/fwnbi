@@ -20,6 +20,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <climits>
+
+#include <type_traits>
 #include <array>
 
 #if __cpp_impl_three_way_comparison >= 201907L
@@ -34,24 +36,10 @@ namespace fwnbi {
 
 namespace detail {
 
-template <bool C, class T, class F>
-struct conditional             { using type = F; };
-template <        class T, class F>
-struct conditional<true, T, F> { using type = T; };
-
-template <bool C, class T, class F>
-using conditional_t = typename conditional<C, T, F>::type;
-
-using u8  = conditional_t<UINT8_MAX  == UINT_FAST8_MAX , uint_fast8_t , uint8_t >;
-using u16 = conditional_t<UINT16_MAX == UINT_FAST16_MAX, uint_fast16_t, uint16_t>;
-using u32 = conditional_t<UINT32_MAX == UINT_FAST32_MAX, uint_fast32_t, uint32_t>;
-using u64 = conditional_t<UINT64_MAX == UINT_FAST64_MAX, uint_fast64_t, uint64_t>;
-
-template <bool C, class T> struct enable_if          {                 };
-template <        class T> struct enable_if<true, T> { using type = T; };
-
-template <bool B, class T>
-using enable_if_t = typename enable_if<B, T>::type;
+using u8  = std::conditional_t<UINT8_MAX  == UINT_FAST8_MAX , uint_fast8_t , uint8_t >;
+using u16 = std::conditional_t<UINT16_MAX == UINT_FAST16_MAX, uint_fast16_t, uint16_t>;
+using u32 = std::conditional_t<UINT32_MAX == UINT_FAST32_MAX, uint_fast32_t, uint32_t>;
+using u64 = std::conditional_t<UINT64_MAX == UINT_FAST64_MAX, uint_fast64_t, uint64_t>;
 
 template <class T> struct make_double_digit {};
 template <> struct make_double_digit<u8 > { using type = u16; };
@@ -191,7 +179,7 @@ public:
         return basic_integer<Bits, DigitT, !Signed>(digits);
     }
 
-    template <size_t BgBits, bool S, detail::enable_if_t<(BgBits > Bits), int> = 0>
+    template <size_t BgBits, bool S, std::enable_if_t<(BgBits > Bits), int> = 0>
     constexpr operator basic_integer<BgBits, DigitT, S>() const noexcept {
         basic_integer<BgBits, DigitT, S> out;
         if (sign() < 0) out = ~out;
@@ -200,7 +188,7 @@ public:
         return out;
     }
 
-    template <size_t TnBits, bool S, detail::enable_if_t<(TnBits < Bits), int> = 0>
+    template <size_t TnBits, bool S, std::enable_if_t<(TnBits < Bits), int> = 0>
     constexpr operator basic_integer<TnBits, DigitT, S>() const noexcept {
         basic_integer<TnBits, DigitT, S> out;
         for (size_t i = 0; i < out.digit_count; i++)
@@ -209,7 +197,7 @@ public:
     }
 
     template <class BgDigitT, bool S,
-        detail::enable_if_t<(sizeof(BgDigitT) > sizeof(DigitT)), int> = 0>
+        std::enable_if_t<(sizeof(BgDigitT) > sizeof(DigitT)), int> = 0>
     constexpr operator basic_integer<Bits, BgDigitT, S>() const noexcept {
         const size_t ratio = sizeof(BgDigitT) / sizeof(DigitT);
         basic_integer<Bits, BgDigitT, S> out;
@@ -222,7 +210,7 @@ public:
     }
 
     template <class TnDigitT, bool S,
-        detail::enable_if_t<(sizeof(TnDigitT) < sizeof(DigitT)), int> = 0>
+        std::enable_if_t<(sizeof(TnDigitT) < sizeof(DigitT)), int> = 0>
     constexpr operator basic_integer<Bits, TnDigitT, S>() const noexcept {
         const size_t ratio = sizeof(DigitT) / sizeof(TnDigitT);
         basic_integer<Bits, TnDigitT, S> out;
@@ -296,7 +284,7 @@ public:
             digits[i + lower.digit_count] = upper.digits[i];
     }
 
-    template <size_t BgBits, detail::enable_if_t<(BgBits > Bits), int> = 0>
+    template <size_t BgBits, std::enable_if_t<(BgBits > Bits), int> = 0>
     constexpr basic_integer<BgBits, DigitT, Signed> expand() const noexcept {
         basic_integer<BgBits, DigitT, Signed> out;
         for (size_t i = 0; i < digit_count; i++)
