@@ -1139,6 +1139,15 @@ using  int1024_t =  intN_t<1024>;
 #define FWNBI_INT512_MAX  (::fwnbi::int512_t ::max())
 #define FWNBI_INT1024_MAX (::fwnbi::int1024_t::max())
 
+namespace digit {
+
+using detail::u8;
+using detail::u16;
+using detail::u32;
+using detail::u64;
+
+} // namespace digit
+
 namespace literals {
 
 constexpr uint128_t operator""_ull128(const char* literal) noexcept

@@ -86,6 +86,10 @@ For multiplication use, the Karatsuba algorithm.
 `uint128_t`/`uint256_t`/`uint512_t`/`uint1024_t` - unsigned aliases  
 `int128_t`/`int256_t`/`int512_t`/`int1024_t` - signed aliases
 
+## Namespace `fwnbi::digit`
+
+`u8`/`u16`/`u32`/`u64` - digit types
+
 ## Namespace `fwnbi::literals`
 
 `_ull128`/`_ull256`/`_ull512`/`_ull1024` - unsigned  
