@@ -61,7 +61,7 @@ template <class  T> struct bitsof {
 };
 
 template <class T>
-void reverse(T* first, T* last) {
+constexpr void reverse(T* first, T* last) noexcept {
     for (--last; first < last; ++first, --last) {
         T t = *first; *first = *last; *last = t;
     }
@@ -579,14 +579,14 @@ public:
 #endif
 
 public:
-    template <size_t B, class D, bool S> friend constexpr basic_integer<B, D, S>
-    rotl(basic_integer<B, D, S> lhs, size_t shift) noexcept;
-    template <size_t B, class D, bool S> friend constexpr basic_integer<B, D, S>
-    rotr(basic_integer<B, D, S> lhs, size_t shift) noexcept;
-    template <size_t B, class D, bool S> friend constexpr basic_integer<B, D, S>
-    rotl(basic_integer<B, D, S> lhs, int shift) noexcept;
-    template <size_t B, class D, bool S> friend constexpr basic_integer<B, D, S>
-    rotr(basic_integer<B, D, S> lhs, int shift) noexcept;
+    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    rotl(basic_integer<B, D, false> lhs, size_t shift) noexcept;
+    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    rotr(basic_integer<B, D, false> lhs, size_t shift) noexcept;
+    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    rotl(basic_integer<B, D, false> lhs, int shift) noexcept;
+    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    rotr(basic_integer<B, D, false> lhs, int shift) noexcept;
 
 private:
     template <size_t B, class D, bool S> friend class basic_integer;
