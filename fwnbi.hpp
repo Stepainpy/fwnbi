@@ -241,6 +241,13 @@ public:
         return static_cast<bool>(*this);
     }
 
+    constexpr size_t width() const noexcept {
+        for (size_t i = digit_count; i --> 0;)
+            if (digits[i])
+                return (i + 1) * digit_width - detail::clz(digits[i]);
+        return 0;
+    }
+
     constexpr void clear() noexcept {
         for (size_t i = 0; i < digit_count; i++)
             digits[i] = digit_type(0);

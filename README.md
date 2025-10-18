@@ -51,6 +51,7 @@ For multiplication use, the Karatsuba algorithm.
 **Support methods:**  
 `bool sign_bit()` - return value of MSB  
 `int sign()` - n > 0 => +1, n = 0 => 0, n < 0 => -1  
+`size_t width()` - return actual bit width of current value  
 `void clear()` - set all digits in zero  
 `bool bit(size_t)` - return value of bit by index, $0 \le \text{index} < \text{Bits}$  
 `void bit(size_t, bool)` - set bit by index, $0 \le \text{index} < \text{Bits}$  
