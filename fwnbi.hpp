@@ -161,7 +161,7 @@ public:
 
     constexpr basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
     constexpr basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
-        { detail::copy(in_digits, digit_count, digits); }
+        : digits() { detail::copy(in_digits, digit_count, digits); }
     constexpr basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept;
 
 #if __cplusplus >= 202002L
@@ -1234,8 +1234,8 @@ namespace fwnbi {
 template <size_t B, class D, bool S>
 constexpr basic_integer<B, D, S>::basic_integer(
     const std::array<digit_type, digit_count>& in_digits
-) noexcept {
-    detail::copy(in_digits.data(), digit_count, digits);
+) noexcept : digits() {
+    detail::copy(&in_digits.at(0), digit_count, digits);
 }
 
 } // namespace fwnbi
