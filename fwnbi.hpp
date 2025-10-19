@@ -77,6 +77,12 @@ constexpr void reverse(T* first, T* last) noexcept {
     }
 }
 
+template <class T>
+constexpr T* copy(const T* first, size_t count, T* out) noexcept {
+    for (size_t i = 0; i < count; ++i) *out++ = *first++;
+    return out;
+}
+
 #ifdef __GNUC__
 constexpr size_t popcount(u64 n) noexcept { return __builtin_popcountll(n); }
 #else
@@ -154,7 +160,7 @@ public:
 
     constexpr basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
     constexpr basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
-        { for (size_t i = 0; i < digit_count; i++) digits[i] = in_digits[i]; }
+        { detail::copy(in_digits, digit_count, digits); }
     constexpr basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept;
 
 #if __cplusplus >= 202002L
@@ -192,16 +198,14 @@ public:
     constexpr operator basic_integer<BgBits, DigitT, S>() const noexcept {
         basic_integer<BgBits, DigitT, S> out;
         if (sign() < 0) out = ~out;
-        for (size_t i = 0; i < digit_count; i++)
-            out.digits[i] = digits[i];
+        detail::copy(digits, digit_count, out.digits);
         return out;
     }
 
     template <size_t TnBits, bool S, detail::enable_if_t<(TnBits < Bits), int> = 0>
     constexpr operator basic_integer<TnBits, DigitT, S>() const noexcept {
         basic_integer<TnBits, DigitT, S> out;
-        for (size_t i = 0; i < out.digit_count; i++)
-            out.digits[i] = digits[i];
+        detail::copy(digits, out.digit_count, out.digits);
         return out;
     }
 
@@ -284,27 +288,23 @@ public:
         basic_integer<Bits / 2, DigitT, Signed>& lower
     ) const noexcept {
         static_assert(bit_width / 2 >= digit_width, "Cannot split one-digit integer");
-        for (size_t i = 0; i < digit_count / 2; i++)
-            lower.digits[i] = digits[i];
-        for (size_t i = 0; i < digit_count / 2; i++)
-            upper.digits[i] = digits[i + digit_count / 2];
+        detail::copy(digits                    , lower.digit_count, lower.digits);
+        detail::copy(digits + lower.digit_count, upper.digit_count, upper.digits);
     }
 
     constexpr void merge(
         const basic_integer<Bits / 2, DigitT, Signed>& upper,
         const basic_integer<Bits / 2, DigitT, Signed>& lower
     ) noexcept {
-        for (size_t i = 0; i < lower.digit_count; i++)
-            digits[i] = lower.digits[i];
-        for (size_t i = 0; i < upper.digit_count; i++)
-            digits[i + lower.digit_count] = upper.digits[i];
+        digit_type* middle =
+        detail::copy(lower.digits, lower.digit_count, digits);
+        detail::copy(upper.digits, upper.digit_count, middle);
     }
 
     template <size_t BgBits, detail::enable_if_t<(BgBits > Bits), int> = 0>
     constexpr basic_integer<BgBits, DigitT, Signed> expand() const noexcept {
         basic_integer<BgBits, DigitT, Signed> out;
-        for (size_t i = 0; i < digit_count; i++)
-            out.digits[i] = digits[i];
+        detail::copy(digits, digit_count, out.digits);
         return out;
     }
 
@@ -1224,8 +1224,7 @@ template <size_t B, class D, bool S>
 constexpr basic_integer<B, D, S>::basic_integer(
     const std::array<digit_type, digit_count>& in_digits
 ) noexcept {
-    for (size_t i = 0; i < digit_count; i++)
-        digits[i] = in_digits[i];
+    detail::copy(in_digits.data(), digit_count, digits);
 }
 
 } // namespace fwnbi
