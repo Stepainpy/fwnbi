@@ -967,14 +967,22 @@ template <class D> struct ctz_t<typename bitsof<D>::type, D> {
 template <class W, class DW>
 class uiwc {
 public:
-    constexpr uiwc(DW w = 0, bool b = false): word(w), msb(b) {}
+    constexpr uiwc(DW w = 0, DW b = 0): word(w), msb(b) {}
 
-    constexpr bool carry() const noexcept { return msb; }
-    constexpr void carry(bool b) noexcept { msb = b; }
-    constexpr void dword(DW w) noexcept { word = w; }
+    constexpr DW   carry() const noexcept { return msb; }
+    constexpr void carry(DW b)   noexcept { msb   =  b; }
+    constexpr void dword(DW w)   noexcept { word  =  w; }
 
     constexpr W lower() const noexcept { return static_cast<W>(word); }
     constexpr W upper() const noexcept { return static_cast<W>(word >> bitsof<W>::value); }
+
+    constexpr uiwc cr_up() const noexcept {
+        return uiwc(word >> bitsof<W>::value | msb << bitsof<W>::value);
+    };
+
+    constexpr uiwc twice() const noexcept {
+        return uiwc(word << 1, word >> (bitsof<DW>::value - 1));
+    }
 
     constexpr uiwc operator+(const uiwc& rhs) const noexcept {
         const DW out = word + rhs.word;
@@ -982,8 +990,7 @@ public:
     }
 
 private:
-    DW  word;
-    bool msb;
+    DW word, msb;
 };
 
 } // namespace detail
@@ -1068,19 +1075,17 @@ constexpr basic_integer<B*2, D, S> sqr(const basic_integer<B, D, S>& value) noex
 
     for (size_t i = 0; i < val.digit_count; i++) {
         cuv.dword(DD(out[i*2]) + DD(val[i]) * DD(val[i]));
-        cuv.carry(false);
+        cuv.carry(0);
         out[i*2] = cuv.lower();
 
         for (size_t j = i + 1; j < val.digit_count; j++) {
-            cuv = uiwc_t(DD(cuv.carry()) << detail::bitsof<D>::value | cuv.upper())
-                + uiwc_t(DD(val[i]) * DD(val[j]))
-                + uiwc_t(DD(val[i]) * DD(val[j]))
-                + uiwc_t(out[i + j]);
+            cuv = cuv.cr_up() + uiwc_t(out[i + j])
+                + uiwc_t(DD(val[i]) * DD(val[j])).twice();
             out[i + j] = cuv.lower();
         }
 
         auto cu = basic_integer<B*2, D, S>(cuv.upper());
-        if (cuv.carry()) cu[1] = D(1);
+        cu[1] = static_cast<D>(cuv.carry());
         cu <<= (i + val.digit_count) * detail::bitsof<D>::value;
         out += cu;
     }
