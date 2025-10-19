@@ -909,8 +909,7 @@ FWNBI_CONSTEXPR14 basic_integer<B, D, S> from_chars_i(
 template <size_t B, class D, bool S>
 FWNBI_CONSTEXPR14 basic_integer<B, D, S> strto_base(
     const char* str, char** end, int base) noexcept {
-    if (!str || base < 0 || base == 1 || base > 36)
-        return basic_integer<B, D, S>();
+    if (!str || base < 0 || base == 1 || base > 36) return {};
 
     while (cexpr_isspace(*str)) ++str;
     if ((base == 0 || base == 8 || base == 16) && *str == '0') {
@@ -934,8 +933,7 @@ FWNBI_CONSTEXPR14 basic_integer<B, D, S> strto_base(
             return out.sign() < 0
                 ? basic_integer<B, D, S>::min()
                 : basic_integer<B, D, S>::max();
-        case from_char_res::invalid:
-            return basic_integer<B, D, S>();
+        case from_char_res::invalid: return {};
     }
 }
 
@@ -1139,7 +1137,7 @@ FWNBI_CONSTEXPR14 basic_integer<B, D, false> gcd(
     const basic_integer<B, D, false>& lhs,
     const basic_integer<B, D, false>& rhs
 ) noexcept {
-    if (!lhs || !rhs) return basic_integer<B, D, false>();
+    if (!lhs || !rhs) return {};
     basic_integer<B, D, false> a = lhs, b = rhs, c;
     size_t i = ctz(a), j = ctz(b), k = i < j ? i : j;
     a >>= i; b >>= j;
@@ -1157,7 +1155,7 @@ FWNBI_CONSTEXPR14 basic_integer<B*2, D, false> lcm(
     const basic_integer<B, D, false>& rhs
 ) noexcept {
     const basic_integer<B, D, false> gcd_res = gcd(lhs, rhs);
-    if (!gcd_res) return basic_integer<B*2, D, false>();
+    if (!gcd_res) return {};
     return fullmull(lhs / gcd_res, rhs);
 }
 
