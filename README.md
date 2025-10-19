@@ -12,6 +12,8 @@ Valid values of `DigitT`: `fwnbi::digit::u8`, `fwnbi::digit::u16`, `fwnbi::digit
 
 For multiplication use, the Karatsuba algorithm.
 
+Available `constexpr` function since C++14.
+
 ## Namespace `fwnbi`
 
 ### Class `basic_integer<size_t Bits, class DigitT, bool Signed>`

@@ -13,8 +13,8 @@
 #ifndef FIXED_WIDTH_N_BITS_INTEGERS_HPP
 #define FIXED_WIDTH_N_BITS_INTEGERS_HPP
 
-#if __cplusplus < 201402L
-#  error This code require C++14
+#if __cplusplus < 201103L
+#  error This code require C++11
 #endif
 
 #include <cstddef>
@@ -27,6 +27,18 @@
 
 #ifdef _MSC_VER
 #  include <intrin.h>
+#endif
+
+#if __cplusplus >= 201402L
+#  define FWNBI_CONSTEXPR14 constexpr
+#else
+#  define FWNBI_CONSTEXPR14
+#endif
+
+#if __cplusplus >= 202002L
+#  define FWNBI_CONSTEXPR20 constexpr
+#else
+#  define FWNBI_CONSTEXPR20
 #endif
 
 namespace std { template <class T, size_t N> struct array; }
@@ -71,14 +83,14 @@ template <class  T> struct bitsof {
 };
 
 template <class T>
-constexpr void reverse(T* first, T* last) noexcept {
+FWNBI_CONSTEXPR14 void reverse(T* first, T* last) noexcept {
     for (--last; first < last; ++first, --last) {
         T t = *first; *first = *last; *last = t;
     }
 }
 
 template <class T>
-constexpr T* copy(const T* first, size_t count, T* out) noexcept {
+FWNBI_CONSTEXPR14 T* copy(const T* first, size_t count, T* out) noexcept {
     for (size_t i = 0; i < count; ++i) *out++ = *first++;
     return out;
 }
@@ -86,7 +98,7 @@ constexpr T* copy(const T* first, size_t count, T* out) noexcept {
 #ifdef __GNUC__
 constexpr size_t popcount(u64 n) noexcept { return __builtin_popcountll(n); }
 #else
-constexpr size_t popcount(u64 n) noexcept {
+FWNBI_CONSTEXPR14 size_t popcount(u64 n) noexcept {
     constexpr u64 m1  = 0x5555555555555555ull;
     constexpr u64 m2  = 0x3333333333333333ull;
     constexpr u64 m4  = 0x0F0F0F0F0F0F0F0Full;
@@ -107,16 +119,16 @@ constexpr size_t clz(T n) noexcept {
         + bitsof<T>::value : bitsof<T>::value;
 }
 #elif defined(_MSC_VER)
-constexpr size_t ctz(u64 n) noexcept
+FWNBI_CONSTEXPR14 size_t ctz(u64 n) noexcept
     { unsigned long out = 0; return _BitScanForward64(&out, n) ? out : 64; }
 
 template <class T>
-constexpr size_t clz(T n) noexcept {
+FWNBI_CONSTEXPR14 size_t clz(T n) noexcept {
     unsigned long out = 0; return _BitScanReverse64(&out, n)
         ? bitsof<T>::value - 1 - out : bitsof<T>::value;
 }
 #else
-constexpr size_t ctz(u64 n) noexcept {
+FWNBI_CONSTEXPR14 size_t ctz(u64 n) noexcept {
     size_t out = 0;
     if (!n) return 64;
     for (; (n & 1) == 0; n >>= 1) ++out;
@@ -124,7 +136,7 @@ constexpr size_t ctz(u64 n) noexcept {
 }
 
 template <class T>
-constexpr size_t clz(T n) noexcept {
+FWNBI_CONSTEXPR14 size_t clz(T n) noexcept {
     constexpr T mask = T(1) << (bitsof<T>::value - 1);
     size_t out = 0;
     if (!n) return bitsof<T>::value;
@@ -153,50 +165,47 @@ public:
     static constexpr bool     is_signed = Signed;
 
 public:
-    constexpr basic_integer() noexcept : digits() {}
-    constexpr basic_integer(const basic_integer& ) noexcept = default;
-    constexpr basic_integer(      basic_integer&&) noexcept = default;
-    constexpr basic_integer& operator=(const basic_integer& ) noexcept = default;
-    constexpr basic_integer& operator=(      basic_integer&&) noexcept = default;
+    FWNBI_CONSTEXPR14 basic_integer() noexcept : digits() {}
+    FWNBI_CONSTEXPR14 basic_integer(const basic_integer& ) noexcept = default;
+    FWNBI_CONSTEXPR14 basic_integer(      basic_integer&&) noexcept = default;
+    FWNBI_CONSTEXPR14 basic_integer& operator=(const basic_integer& ) noexcept = default;
+    FWNBI_CONSTEXPR14 basic_integer& operator=(      basic_integer&&) noexcept = default;
 
-    constexpr basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
-    constexpr basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
+    FWNBI_CONSTEXPR14 basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
+    FWNBI_CONSTEXPR14 basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
         : digits() { detail::copy(in_digits, digit_count, digits); }
-    constexpr basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept;
+    FWNBI_CONSTEXPR14 basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept;
 
-#if __cplusplus >= 202002L
-    constexpr
-#endif
-    ~basic_integer() noexcept = default;
+    FWNBI_CONSTEXPR20 ~basic_integer() noexcept = default;
 
 public:
-    static constexpr basic_integer max() noexcept
+    static FWNBI_CONSTEXPR14 basic_integer max() noexcept
         { return ~basic_integer<Bits, DigitT, false>() >> size_t(is_signed); }
-    static constexpr basic_integer min() noexcept
+    static FWNBI_CONSTEXPR14 basic_integer min() noexcept
         { return max() + digit_type(1); }
 
 public:
-    constexpr operator bool() const noexcept {
+    FWNBI_CONSTEXPR14 operator bool() const noexcept {
         for (size_t i = 0; i < digit_count; i++)
             if (digits[i]) return true;
         return false;
     }
 
-    constexpr operator digit_type() const noexcept { return digits[0]; }
+    FWNBI_CONSTEXPR14 operator digit_type() const noexcept { return digits[0]; }
 
-    constexpr operator double_digit_type() const noexcept {
+    FWNBI_CONSTEXPR14 operator double_digit_type() const noexcept {
         double_digit_type out = digits[0];
         if (digit_count > 1)
             out |= double_digit_type(digits[1]) << digit_width;
         return out;
     }
 
-    constexpr operator basic_integer<Bits, DigitT, !Signed>() const noexcept {
+    FWNBI_CONSTEXPR14 operator basic_integer<Bits, DigitT, !Signed>() const noexcept {
         return basic_integer<Bits, DigitT, !Signed>(digits);
     }
 
     template <size_t BgBits, bool S, detail::enable_if_t<(BgBits > Bits), int> = 0>
-    constexpr operator basic_integer<BgBits, DigitT, S>() const noexcept {
+    FWNBI_CONSTEXPR14 operator basic_integer<BgBits, DigitT, S>() const noexcept {
         basic_integer<BgBits, DigitT, S> out;
         if (sign() < 0) out = ~out;
         detail::copy(digits, digit_count, out.digits);
@@ -204,7 +213,7 @@ public:
     }
 
     template <size_t TnBits, bool S, detail::enable_if_t<(TnBits < Bits), int> = 0>
-    constexpr operator basic_integer<TnBits, DigitT, S>() const noexcept {
+    FWNBI_CONSTEXPR14 operator basic_integer<TnBits, DigitT, S>() const noexcept {
         basic_integer<TnBits, DigitT, S> out;
         detail::copy(digits, out.digit_count, out.digits);
         return out;
@@ -212,7 +221,7 @@ public:
 
     template <class BgDigitT, bool S,
         detail::enable_if_t<(sizeof(BgDigitT) > sizeof(DigitT)), int> = 0>
-    constexpr operator basic_integer<Bits, BgDigitT, S>() const noexcept {
+    FWNBI_CONSTEXPR14 operator basic_integer<Bits, BgDigitT, S>() const noexcept {
         const size_t ratio = sizeof(BgDigitT) / sizeof(DigitT);
         basic_integer<Bits, BgDigitT, S> out;
         for (size_t i = 0; i < out.digit_count; i++)
@@ -225,7 +234,7 @@ public:
 
     template <class TnDigitT, bool S,
         detail::enable_if_t<(sizeof(TnDigitT) < sizeof(DigitT)), int> = 0>
-    constexpr operator basic_integer<Bits, TnDigitT, S>() const noexcept {
+    FWNBI_CONSTEXPR14 operator basic_integer<Bits, TnDigitT, S>() const noexcept {
         const size_t ratio = sizeof(DigitT) / sizeof(TnDigitT);
         basic_integer<Bits, TnDigitT, S> out;
         for (size_t i = 0; i < digit_count; i++)
@@ -237,33 +246,33 @@ public:
     }
 
 public:
-    constexpr bool sign_bit() const noexcept {
+    FWNBI_CONSTEXPR14 bool sign_bit() const noexcept {
         return digits[digit_count - 1] >> (digit_width - 1);
     }
 
-    constexpr int sign() const noexcept {
+    FWNBI_CONSTEXPR14 int sign() const noexcept {
         if (is_signed && sign_bit()) return -1;
         return static_cast<bool>(*this);
     }
 
-    constexpr size_t width() const noexcept {
+    FWNBI_CONSTEXPR14 size_t width() const noexcept {
         for (size_t i = digit_count; i --> 0;)
             if (digits[i])
                 return (i + 1) * digit_width - detail::clz(digits[i]);
         return 0;
     }
 
-    constexpr void clear() noexcept {
+    FWNBI_CONSTEXPR14 void clear() noexcept {
         for (size_t i = 0; i < digit_count; i++)
             digits[i] = digit_type(0);
     }
 
-    constexpr bool bit(size_t index) const noexcept {
+    FWNBI_CONSTEXPR14 bool bit(size_t index) const noexcept {
         if (index >= bit_width) return false;
         return digits[index / digit_width] >> (index % digit_width) & 1;
     }
 
-    constexpr void bit(size_t index, bool value) noexcept {
+    FWNBI_CONSTEXPR14 void bit(size_t index, bool value) noexcept {
         if (index >= bit_width) return;
         const size_t d_i = index / digit_width;
         const size_t b_i = index % digit_width;
@@ -271,12 +280,12 @@ public:
         (digits[d_i] &= mask) |= digit_type(value) << b_i;
     }
 
-    constexpr uint8_t hex(size_t index) const noexcept {
+    FWNBI_CONSTEXPR14 uint8_t hex(size_t index) const noexcept {
         if (index >= bit_width / 4) return 0;
         return digits[index * 4 / digit_width] >> (index * 4 % digit_width) & 15;
     }
 
-    constexpr void hex(size_t index, uint8_t value) noexcept {
+    FWNBI_CONSTEXPR14 void hex(size_t index, uint8_t value) noexcept {
         if (index >= bit_width / 4) return;
         const size_t d_i = index * 4 / digit_width;
         const size_t h_i = index * 4 % digit_width;
@@ -285,7 +294,7 @@ public:
     }
 
     template <size_t BitsU, size_t BitsL>
-    constexpr auto split(
+    FWNBI_CONSTEXPR14 auto split(
         basic_integer<BitsU, DigitT, Signed>& upper,
         basic_integer<BitsL, DigitT, Signed>& lower
     ) const noexcept -> detail::enable_if_t<BitsU + BitsL == Bits, void> {
@@ -294,7 +303,7 @@ public:
     }
 
     template <size_t BitsU, size_t BitsL>
-    constexpr auto merge(
+    FWNBI_CONSTEXPR14 auto merge(
         const basic_integer<BitsU, DigitT, Signed>& upper,
         const basic_integer<BitsL, DigitT, Signed>& lower
     ) noexcept -> detail::enable_if_t<BitsU + BitsL == Bits, void> {
@@ -304,13 +313,13 @@ public:
     }
 
     template <size_t BgBits, detail::enable_if_t<(BgBits > Bits), int> = 0>
-    constexpr basic_integer<BgBits, DigitT, Signed> expand() const noexcept {
+    FWNBI_CONSTEXPR14 basic_integer<BgBits, DigitT, Signed> expand() const noexcept {
         basic_integer<BgBits, DigitT, Signed> out;
         detail::copy(digits, digit_count, out.digits);
         return out;
     }
 
-    constexpr bool add_with_carry(const basic_integer& rhs, bool carry = false) noexcept {
+    FWNBI_CONSTEXPR14 bool add_with_carry(const basic_integer& rhs, bool carry = false) noexcept {
         for (size_t i = 0; i < digit_count; i++) {
             digit_type prev = digits[i];
             digits[i] += rhs.digits[i] + carry;
@@ -319,7 +328,7 @@ public:
         return carry;
     }
 
-    constexpr bool add_with_carry(digit_type rhs, bool carry = false) noexcept {
+    FWNBI_CONSTEXPR14 bool add_with_carry(digit_type rhs, bool carry = false) noexcept {
         digit_type prev = digits[0];
         digits[0] += rhs + carry;
         carry = carry ? prev >= digits[0] : prev > digits[0];
@@ -329,7 +338,7 @@ public:
         return carry;
     }
 
-    constexpr void swap(basic_integer& rhs) noexcept {
+    FWNBI_CONSTEXPR14 void swap(basic_integer& rhs) noexcept {
         for (size_t i = 0; i < digit_count; i++) {
             digit_type t = digits[i];
             digits[i] = rhs.digits[i];
@@ -338,14 +347,14 @@ public:
     }
 
 private:
-    constexpr void small_shift_left(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void small_shift_left(size_t shift) noexcept {
         if (!shift || shift >= digit_width) return;
         for (size_t i = digit_count; i --> 1;)
             digits[i] = digits[i] << shift | digits[i - 1] >> (digit_width - shift);
         digits[0] <<= shift;
     }
 
-    constexpr void small_shift_right(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void small_shift_right(size_t shift) noexcept {
         if (!shift || shift >= digit_width) return;
         digit_type saved_sign_bit = sign() < 0;
         for (size_t i = 0; i < digit_count - 1; i++)
@@ -354,7 +363,7 @@ private:
         digits[digit_count - 1] |= (-saved_sign_bit) << (digit_width - shift);
     }
 
-    constexpr void digit_shift_left(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void digit_shift_left(size_t shift) noexcept {
         if (shift >= digit_count) return clear();
         for (size_t i = digit_count; i --> shift;)
             digits[i] = digits[i - shift];
@@ -362,7 +371,7 @@ private:
             digits[i] = digit_type(0);
     }
 
-    constexpr void digit_shift_right(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void digit_shift_right(size_t shift) noexcept {
         if (shift >= digit_count) return clear();
         digit_type saved_sign_bit = sign() < 0;
         for (size_t i = 0; i < digit_count - shift; i++)
@@ -371,28 +380,28 @@ private:
             digits[i] = -saved_sign_bit;
     }
 
-    constexpr void small_rotate_left(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void small_rotate_left(size_t shift) noexcept {
         if (!shift || shift >= digit_width) return;
         digit_type part = digits[digit_count - 1] >> (digit_width - shift);
         small_shift_left(shift);
         digits[0] |= part;
     }
 
-    constexpr void small_rotate_right(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void small_rotate_right(size_t shift) noexcept {
         if (!shift || shift >= digit_width) return;
         digit_type part = digits[0] << (digit_width - shift);
         small_shift_right(shift);
         digits[digit_count - 1] |= part;
     }
 
-    constexpr void digit_rotate_left(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void digit_rotate_left(size_t shift) noexcept {
         shift %= digit_count; if (!shift) return;
         detail::reverse(digits, digits + digit_count - shift);
         detail::reverse(digits + digit_count - shift, digits + digit_count);
         detail::reverse(digits, digits + digit_count);
     }
 
-    constexpr void digit_rotate_right(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 void digit_rotate_right(size_t shift) noexcept {
         shift %= digit_count; if (!shift) return;
         detail::reverse(digits, digits + shift);
         detail::reverse(digits + shift, digits + digit_count);
@@ -401,7 +410,7 @@ private:
 
     struct divmod_t { basic_integer quot, rem; };
 
-    constexpr divmod_t divmod_unsigned(const basic_integer& divisor) const noexcept {
+    FWNBI_CONSTEXPR14 divmod_t divmod_unsigned(const basic_integer& divisor) const noexcept {
         divmod_t out {};
         for (size_t i = bit_width; i --> 0;) {
             out.rem.small_shift_left(1);
@@ -414,7 +423,7 @@ private:
         return out;
     }
 
-    constexpr divmod_t divmod(const basic_integer& divisor) const noexcept {
+    FWNBI_CONSTEXPR14 divmod_t divmod(const basic_integer& divisor) const noexcept {
         if (!divisor) return {basic_integer::max(), basic_integer::max()};
         if (divisor.sign() < 0) {
             divmod_t out = divmod(-divisor);
@@ -430,21 +439,19 @@ private:
     }
 
 public:
-    constexpr digit_type& operator[](size_t index) noexcept
-        { return digits[index]; }
-    constexpr const digit_type& operator[](size_t index) const noexcept
-        { return digits[index]; }
+    FWNBI_CONSTEXPR14       digit_type& operator[](size_t index)       noexcept { return digits[index]; }
+    FWNBI_CONSTEXPR14 const digit_type& operator[](size_t index) const noexcept { return digits[index]; }
 
 public:
-    constexpr basic_integer operator+() const noexcept { return *this; }
+    FWNBI_CONSTEXPR14 basic_integer operator+() const noexcept { return *this; }
 
-    constexpr basic_integer operator-() const noexcept {
+    FWNBI_CONSTEXPR14 basic_integer operator-() const noexcept {
         basic_integer out = ~(*this);
         out.add_with_carry(1);
         return out;
     }
 
-    constexpr basic_integer operator~() const noexcept {
+    FWNBI_CONSTEXPR14 basic_integer operator~() const noexcept {
         basic_integer out = *this;
         for (size_t i = 0; i < out.digit_count; i++)
             out.digits[i] = ~out.digits[i];
@@ -452,120 +459,120 @@ public:
     }
 
 public:
-    constexpr basic_integer& operator++() noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator++() noexcept
         { add_with_carry(digit_type(1)); return *this; }
-    constexpr basic_integer& operator--() noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator--() noexcept
         { add_with_carry(~basic_integer()); return *this; }
-    constexpr basic_integer operator++(int) noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator++(int) noexcept
         { basic_integer out = *this; ++(*this); return out; }
-    constexpr basic_integer operator--(int) noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator--(int) noexcept
         { basic_integer out = *this; --(*this); return out; }
 
 public:
-    constexpr basic_integer& operator+=(const basic_integer& rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator+=(const basic_integer& rhs) noexcept
         { add_with_carry(rhs); return *this; }
-    constexpr basic_integer& operator+=(digit_type rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator+=(digit_type rhs) noexcept
         { add_with_carry(rhs); return *this; }
-    constexpr basic_integer& operator-=(const basic_integer& rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator-=(const basic_integer& rhs) noexcept
         { add_with_carry(-rhs); return *this; }
-    constexpr basic_integer& operator-=(digit_type rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator-=(digit_type rhs) noexcept
         { add_with_carry(-basic_integer(rhs)); return *this; }
 
-    constexpr basic_integer& operator*=(const basic_integer&) noexcept;
-    constexpr basic_integer& operator*=(digit_type rhs) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator*=(const basic_integer&) noexcept;
+    FWNBI_CONSTEXPR14 basic_integer& operator*=(digit_type rhs) noexcept {
         basic_integer out;
         for (; rhs; rhs >>= 1, *this <<= 1)
             if (rhs & 1) out += *this;
         return *this = out;
     }
 
-    constexpr basic_integer& operator/=(const basic_integer& rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator/=(const basic_integer& rhs) noexcept
         { return *this = divmod(rhs).quot; }
-    constexpr basic_integer& operator%=(const basic_integer& rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator%=(const basic_integer& rhs) noexcept
         { return *this = divmod(rhs).rem;  }
-    constexpr basic_integer& operator/=(digit_type rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator/=(digit_type rhs) noexcept
         { return *this = divmod(basic_integer(rhs)).quot; }
-    constexpr basic_integer& operator%=(digit_type rhs) noexcept
+    FWNBI_CONSTEXPR14 basic_integer& operator%=(digit_type rhs) noexcept
         { return *this = divmod(basic_integer(rhs)).rem;  }
 
-    constexpr basic_integer& operator&=(const basic_integer& rhs) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator&=(const basic_integer& rhs) noexcept {
         for (size_t i = 0; i < digit_count; i++)
             digits[i] &= rhs.digits[i];
         return *this;
     }
-    constexpr basic_integer& operator|=(const basic_integer& rhs) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator|=(const basic_integer& rhs) noexcept {
         for (size_t i = 0; i < digit_count; i++)
             digits[i] |= rhs.digits[i];
         return *this;
     }
-    constexpr basic_integer& operator^=(const basic_integer& rhs) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator^=(const basic_integer& rhs) noexcept {
         for (size_t i = 0; i < digit_count; i++)
             digits[i] ^= rhs.digits[i];
         return *this;
     }
 
-    constexpr basic_integer& operator<<=(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator<<=(size_t shift) noexcept {
         digit_shift_left(shift / digit_width);
         small_shift_left(shift % digit_width);
         return *this;
     }
-    constexpr basic_integer& operator>>=(size_t shift) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator>>=(size_t shift) noexcept {
         digit_shift_right(shift / digit_width);
         small_shift_right(shift % digit_width);
         return *this;
     }
 
-    constexpr basic_integer& operator<<=(int shift) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator<<=(int shift) noexcept {
         if (shift > 0) return *this <<= static_cast<size_t>( shift);
         if (shift < 0) return *this >>= static_cast<size_t>(-shift);
         return *this;
     }
-    constexpr basic_integer& operator>>=(int shift) noexcept {
+    FWNBI_CONSTEXPR14 basic_integer& operator>>=(int shift) noexcept {
         if (shift > 0) return *this >>= static_cast<size_t>( shift);
         if (shift < 0) return *this <<= static_cast<size_t>(-shift);
         return *this;
     }
 
 public:
-    constexpr basic_integer operator+(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator+(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) += rhs; }
-    constexpr basic_integer operator-(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator-(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) -= rhs; }
-    constexpr basic_integer operator*(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator*(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) *= rhs; }
-    constexpr basic_integer operator/(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator/(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) /= rhs; }
-    constexpr basic_integer operator%(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator%(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) %= rhs; }
-    constexpr basic_integer operator&(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator&(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) &= rhs; }
-    constexpr basic_integer operator|(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator|(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) |= rhs; }
-    constexpr basic_integer operator^(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator^(const basic_integer& rhs) const noexcept
         { return basic_integer(*this) ^= rhs; }
 
-    constexpr basic_integer operator+(digit_type rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator+(digit_type rhs) const noexcept
         { return basic_integer(*this) += rhs; }
-    constexpr basic_integer operator-(digit_type rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator-(digit_type rhs) const noexcept
         { return basic_integer(*this) -= rhs; }
-    constexpr basic_integer operator*(digit_type rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator*(digit_type rhs) const noexcept
         { return basic_integer(*this) *= rhs; }
-    constexpr basic_integer operator/(digit_type rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator/(digit_type rhs) const noexcept
         { return basic_integer(*this) /= rhs; }
-    constexpr basic_integer operator%(digit_type rhs) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator%(digit_type rhs) const noexcept
         { return basic_integer(*this) %= rhs; }
 
-    constexpr basic_integer operator<<(size_t shift) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator<<(size_t shift) const noexcept
         { return basic_integer(*this) <<= shift; }
-    constexpr basic_integer operator>>(size_t shift) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator>>(size_t shift) const noexcept
         { return basic_integer(*this) >>= shift; }
-    constexpr basic_integer operator<<(int shift) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator<<(int shift) const noexcept
         { return basic_integer(*this) <<= shift; }
-    constexpr basic_integer operator>>(int shift) const noexcept
+    FWNBI_CONSTEXPR14 basic_integer operator>>(int shift) const noexcept
         { return basic_integer(*this) >>= shift; }
 
 public:
-    constexpr int compare(const basic_integer& rhs) const noexcept {
+    FWNBI_CONSTEXPR14 int compare(const basic_integer& rhs) const noexcept {
         if (!is_signed || sign_bit() == rhs.sign_bit()) {
             size_t i = digit_count - 1;
             while (i && digits[i] == rhs.digits[i]) --i;
@@ -574,7 +581,7 @@ public:
         return !sign_bit() * 2 - 1;
     }
 
-    constexpr bool operator==(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator==(const basic_integer& rhs) const noexcept
         { return compare(rhs) == 0; }
 #if __cpp_impl_three_way_comparison >= 201907L
     constexpr std::strong_ordering operator<=>(const basic_integer& rhs) const noexcept {
@@ -584,26 +591,26 @@ public:
         return std::strong_ordering::equal;
     }
 #else
-    constexpr bool operator!=(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator!=(const basic_integer& rhs) const noexcept
         { return compare(rhs) != 0; }
-    constexpr bool operator< (const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator< (const basic_integer& rhs) const noexcept
         { return compare(rhs) <  0; }
-    constexpr bool operator> (const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator> (const basic_integer& rhs) const noexcept
         { return compare(rhs) >  0; }
-    constexpr bool operator<=(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator<=(const basic_integer& rhs) const noexcept
         { return compare(rhs) <= 0; }
-    constexpr bool operator>=(const basic_integer& rhs) const noexcept
+    FWNBI_CONSTEXPR14 bool operator>=(const basic_integer& rhs) const noexcept
         { return compare(rhs) >= 0; }
 #endif
 
 public:
-    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
     rotl(basic_integer<B, D, false> lhs, size_t shift) noexcept;
-    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
     rotr(basic_integer<B, D, false> lhs, size_t shift) noexcept;
-    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
     rotl(basic_integer<B, D, false> lhs, int shift) noexcept;
-    template <size_t B, class D> friend constexpr basic_integer<B, D, false>
+    template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
     rotr(basic_integer<B, D, false> lhs, int shift) noexcept;
 
 private:
@@ -616,7 +623,7 @@ namespace detail {
 
 template <class Bt, class D, bool S>
 struct karatsuba {
-    static constexpr basic_integer<Bt::value*2, D, S> calc(
+    static FWNBI_CONSTEXPR14 basic_integer<Bt::value*2, D, S> calc(
         const basic_integer<Bt::value, D, S>& lhs,
         const basic_integer<Bt::value, D, S>& rhs
     ) noexcept {
@@ -652,7 +659,7 @@ struct karatsuba {
 
 template <class D, bool S>
 struct karatsuba<typename bitsof<D>::type, D, S> {
-    static constexpr basic_integer<bitsof<D>::value*2, D, S> calc(
+    static FWNBI_CONSTEXPR14 basic_integer<bitsof<D>::value*2, D, S> calc(
         const basic_integer<bitsof<D>::value, D, S>& lhs,
         const basic_integer<bitsof<D>::value, D, S>& rhs
     ) noexcept {
@@ -667,31 +674,31 @@ struct karatsuba<typename bitsof<D>::type, D, S> {
     }
 };
 
-constexpr size_t cexpr_strlen(const char* str) noexcept {
+FWNBI_CONSTEXPR14 size_t cexpr_strlen(const char* str) noexcept {
     size_t size = 0;
     while (*str++) ++size;
     return size;
 }
 
-constexpr size_t cexpr_strchr(const char* str, char ch) noexcept {
+FWNBI_CONSTEXPR14 size_t cexpr_strchr(const char* str, char ch) noexcept {
     size_t count = 0;
     for (; *str; str++) if (*str == ch) ++count;
     return count;
 }
 
-constexpr bool cexpr_isspace(char ch) noexcept {
+FWNBI_CONSTEXPR14 bool cexpr_isspace(char ch) noexcept {
     return ch ==  ' ' || ch == '\n' || ch == '\t'
         || ch == '\r' || ch == '\v' || ch == '\f';
 }
 
-constexpr bool cexpr_isdigit(char ch) noexcept {
+FWNBI_CONSTEXPR14 bool cexpr_isdigit(char ch) noexcept {
     return ch == '0' || ch == '1' || ch == '2'
         || ch == '3' || ch == '4' || ch == '5'
         || ch == '6' || ch == '7' || ch == '8'
         || ch == '9';
 }
 
-constexpr size_t prime_log2(unsigned n) noexcept {
+FWNBI_CONSTEXPR14 size_t prime_log2(unsigned n) noexcept {
     if (!n) return size_t(-1);
     size_t out = 0;
     for (; n > 1; n >>= 1) ++out;
@@ -699,7 +706,7 @@ constexpr size_t prime_log2(unsigned n) noexcept {
 }
 
 template <class T>
-constexpr T char2digit(char ch) noexcept {
+FWNBI_CONSTEXPR14 T char2digit(char ch) noexcept {
     if ('0' <= ch && ch <= '9')
         return T(     ch - '0');
     if ('a' <= ch && ch <= 'z')
@@ -712,7 +719,7 @@ constexpr T char2digit(char ch) noexcept {
 static constexpr auto log10_2 = 0.3010299956639812L;
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B, D, S> from_literal(const char* literal) noexcept {
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> from_literal(const char* literal) noexcept {
     enum class lit_base {
         bin = 1, oct = 3, dec = 0, hex = 4
     } base = lit_base::dec;
@@ -776,7 +783,7 @@ static constexpr char digit_alphabet[36] = {
     'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
 };
 
-template <size_t B, class D, bool S> constexpr char* to_chars_i(
+template <size_t B, class D, bool S> FWNBI_CONSTEXPR14 char* to_chars_i(
     char* first, char* last, basic_integer<B, D, S> num, bool* of, int base
 ) noexcept {
     make_double_digit_t<D> d, r;
@@ -815,7 +822,8 @@ template <size_t B, class D, bool S> constexpr char* to_chars_i(
     return pos;
 }
 
-template <size_t B, class D, bool S> constexpr char* to_chars_pow2(
+template <size_t B, class D, bool S>
+FWNBI_CONSTEXPR14 char* to_chars_pow2(
     char* first, char* last, basic_integer<B, D, S> num,
     bool* of, int pow, bool uppercase = false
 ) noexcept {
@@ -844,7 +852,7 @@ enum class from_char_res {
 };
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B, D, S> from_chars_i(
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> from_chars_i(
     const char* first, const char* last,
     from_char_res& res, const char** end, int base
 ) noexcept {
@@ -899,7 +907,7 @@ constexpr basic_integer<B, D, S> from_chars_i(
 }
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B, D, S> strto_base(
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> strto_base(
     const char* str, char** end, int base) noexcept {
     if (!str || base < 0 || base == 1 || base > 36)
         return basic_integer<B, D, S>();
@@ -932,7 +940,7 @@ constexpr basic_integer<B, D, S> strto_base(
 }
 
 template <class Bt, class D> struct clz_t {
-    static constexpr size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
+    static FWNBI_CONSTEXPR14 size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
         using intB = basic_integer<Bt::value, D, false>;
         constexpr size_t upper_width = intB::digit_count / 2;
         constexpr size_t lower_width = intB::digit_count - upper_width;
@@ -945,7 +953,7 @@ template <class Bt, class D> struct clz_t {
 };
 
 template <class D> struct clz_t<typename bitsof<D>::type, D> {
-    static constexpr size_t calc(
+    static FWNBI_CONSTEXPR14 size_t calc(
         const basic_integer<bitsof<D>::value, D, false>& value
     ) noexcept {
         if (!value[0]) return bitsof<D>::value;
@@ -954,7 +962,7 @@ template <class D> struct clz_t<typename bitsof<D>::type, D> {
 };
 
 template <class Bt, class D> struct ctz_t {
-    static constexpr size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
+    static FWNBI_CONSTEXPR14 size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
         using intB = basic_integer<Bt::value, D, false>;
         constexpr size_t upper_width = intB::digit_count / 2;
         constexpr size_t lower_width = intB::digit_count - upper_width;
@@ -967,7 +975,7 @@ template <class Bt, class D> struct ctz_t {
 };
 
 template <class D> struct ctz_t<typename bitsof<D>::type, D> {
-    static constexpr size_t calc(
+    static FWNBI_CONSTEXPR14 size_t calc(
         const basic_integer<bitsof<D>::value, D, false>& value
     ) noexcept {
         if (!value[0]) return bitsof<D>::value;
@@ -978,26 +986,27 @@ template <class D> struct ctz_t<typename bitsof<D>::type, D> {
 template <class W, class DW>
 class uiwc {
 public:
-    constexpr uiwc(DW w = 0, DW b = 0): word(w), msb(b) {}
+    FWNBI_CONSTEXPR14 uiwc(DW w = 0, DW b = 0): word(w), msb(b) {}
 
-    constexpr DW   carry() const noexcept { return msb; }
-    constexpr void carry(DW b)   noexcept { msb   =  b; }
-    constexpr void dword(DW w)   noexcept { word  =  w; }
+    FWNBI_CONSTEXPR14 DW   carry() const noexcept { return msb; }
+    FWNBI_CONSTEXPR14 void carry(DW b)   noexcept { msb   =  b; }
+    FWNBI_CONSTEXPR14 void dword(DW w)   noexcept { word  =  w; }
 
-    constexpr W lower() const noexcept { return static_cast<W>(word); }
-    constexpr W upper() const noexcept { return static_cast<W>(word >> bitsof<W>::value); }
+    FWNBI_CONSTEXPR14 W lower() const noexcept
+        { return static_cast<W>(word); }
+    FWNBI_CONSTEXPR14 W upper() const noexcept
+        { return static_cast<W>(word >> bitsof<W>::value); }
 
-    constexpr uiwc cr_up() const noexcept {
+    FWNBI_CONSTEXPR14 uiwc cr_up() const noexcept {
         return uiwc(word >> bitsof<W>::value | msb << bitsof<W>::value);
     };
 
-    constexpr uiwc twice() const noexcept {
+    FWNBI_CONSTEXPR14 uiwc twice() const noexcept {
         return uiwc(word << 1, word >> (bitsof<DW>::value - 1));
     }
 
-    constexpr uiwc operator+(const uiwc& rhs) const noexcept {
-        const DW out = word + rhs.word;
-        return uiwc(out, msb ^ rhs.msb ^ (word > out));
+    FWNBI_CONSTEXPR14 uiwc operator+(const uiwc& rhs) const noexcept {
+        return uiwc(word + rhs.word, msb ^ rhs.msb ^ (word > word + rhs.word));
     }
 
 private:
@@ -1006,71 +1015,81 @@ private:
 
 } // namespace detail
 
-template <size_t B, class D, bool S> constexpr basic_integer<B, D, S>&
+template <size_t B, class D, bool S> FWNBI_CONSTEXPR14 basic_integer<B, D, S>&
 basic_integer<B, D, S>::operator*=(const basic_integer<B, D, S>& rhs) noexcept {
     return *this = detail::karatsuba<detail::size_s<B>, D, S>::calc(*this, rhs);
 }
 
 template <size_t B, class D, bool S>
-basic_integer<B, D, S> operator+(D lhs, const basic_integer<B, D, S>& rhs)
-    noexcept { return rhs + lhs; }
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> operator+(
+    D lhs, const basic_integer<B, D, S>& rhs
+) noexcept { return rhs + lhs; }
 template <size_t B, class D, bool S>
-basic_integer<B, D, S> operator*(D lhs, const basic_integer<B, D, S>& rhs)
-    noexcept { return rhs * lhs; }
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> operator*(
+    D lhs, const basic_integer<B, D, S>& rhs
+) noexcept { return rhs * lhs; }
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B*2, D, S> fullmul(
+FWNBI_CONSTEXPR14 basic_integer<B*2, D, S> fullmul(
     const basic_integer<B, D, S>& lhs, const basic_integer<B, D, S>& rhs
 ) noexcept { return detail::karatsuba<detail::size_s<B>, D, S>::calc(lhs, rhs); }
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B, D, S> abs(basic_integer<B, D, S> value) noexcept {
+FWNBI_CONSTEXPR14 basic_integer<B, D, S> abs(basic_integer<B, D, S> value) noexcept {
     if (value.sign() < 0) value = -value;
     return value;
 }
 
-template <size_t B, class D> constexpr basic_integer<B, D, false>
-rotl(basic_integer<B, D, false> lhs, size_t shift) noexcept {
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotl(
+    basic_integer<B, D, false> lhs, size_t shift
+) noexcept {
     shift %= B;
     lhs.digit_rotate_left(shift / lhs.digit_width);
     lhs.small_rotate_left(shift % lhs.digit_width);
     return lhs;
 }
 
-template <size_t B, class D> constexpr basic_integer<B, D, false>
-rotr(basic_integer<B, D, false> lhs, size_t shift) noexcept {
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotr(
+    basic_integer<B, D, false> lhs, size_t shift
+) noexcept {
     shift %= B;
     lhs.digit_rotate_right(shift / lhs.digit_width);
     lhs.small_rotate_right(shift % lhs.digit_width);
     return lhs;
 }
 
-template <size_t B, class D> constexpr basic_integer<B, D, false>
-rotl(basic_integer<B, D, false> lhs, int shift) noexcept {
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotl(
+    basic_integer<B, D, false> lhs, int shift
+) noexcept {
     if (shift > 0) return rotl(lhs, static_cast<size_t>( shift));
     if (shift < 0) return rotr(lhs, static_cast<size_t>(-shift));
     return lhs;
 }
 
-template <size_t B, class D> constexpr basic_integer<B, D, false>
-rotr(basic_integer<B, D, false> lhs, int shift) noexcept {
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotr(
+    basic_integer<B, D, false> lhs, int shift
+) noexcept {
     if (shift > 0) return rotr(lhs, static_cast<size_t>( shift));
     if (shift < 0) return rotl(lhs, static_cast<size_t>(-shift));
     return lhs;
 }
 
 template <size_t B, class D>
-constexpr size_t clz(const basic_integer<B, D, false>& value) noexcept {
+FWNBI_CONSTEXPR14 size_t clz(const basic_integer<B, D, false>& value) noexcept {
     return detail::clz_t<detail::size_s<B>, D>::calc(value);
 }
 
 template <size_t B, class D>
-constexpr size_t ctz(const basic_integer<B, D, false>& value) noexcept {
+FWNBI_CONSTEXPR14 size_t ctz(const basic_integer<B, D, false>& value) noexcept {
     return detail::ctz_t<detail::size_s<B>, D>::calc(value);
 }
 
 template <size_t B, class D>
-constexpr size_t popcount(const basic_integer<B, D, false>& value) noexcept {
+FWNBI_CONSTEXPR14 size_t popcount(const basic_integer<B, D, false>& value) noexcept {
     size_t out = 0;
     for (size_t i = 0; i < value.digit_count; i++)
         out += detail::popcount(value[i]);
@@ -1078,7 +1097,8 @@ constexpr size_t popcount(const basic_integer<B, D, false>& value) noexcept {
 }
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B*2, D, S> sqr(const basic_integer<B, D, S>& value) noexcept {
+FWNBI_CONSTEXPR14 basic_integer<B*2, D, S>
+sqr(const basic_integer<B, D, S>& value) noexcept {
     using DD = detail::make_double_digit_t<D>;
     using uiwc_t = detail::uiwc<D, DD>;
     basic_integer<B*2, D, S> out; uiwc_t cuv;
@@ -1104,7 +1124,7 @@ constexpr basic_integer<B*2, D, S> sqr(const basic_integer<B, D, S>& value) noex
     return out;
 }
 
-template <size_t B, class D> constexpr basic_integer<B, D, false>
+template <size_t B, class D> FWNBI_CONSTEXPR14 basic_integer<B, D, false>
 isqrt(const basic_integer<B, D, false>& value) noexcept {
     auto out = basic_integer<B, D, false>(1) << ((B - clz(value) + 1) >> 1);
     while (true) {
@@ -1115,7 +1135,7 @@ isqrt(const basic_integer<B, D, false>& value) noexcept {
 }
 
 template <size_t B, class D>
-constexpr basic_integer<B, D, false> gcd(
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> gcd(
     const basic_integer<B, D, false>& lhs,
     const basic_integer<B, D, false>& rhs
 ) noexcept {
@@ -1132,7 +1152,7 @@ constexpr basic_integer<B, D, false> gcd(
 }
 
 template <size_t B, class D>
-constexpr basic_integer<B*2, D, false> lcm(
+FWNBI_CONSTEXPR14 basic_integer<B*2, D, false> lcm(
     const basic_integer<B, D, false>& lhs,
     const basic_integer<B, D, false>& rhs
 ) noexcept {
@@ -1182,22 +1202,22 @@ using detail::u64;
 
 namespace literals {
 
-constexpr uint128_t operator""_ull128(const char* literal) noexcept
+FWNBI_CONSTEXPR14 uint128_t operator""_ull128(const char* literal) noexcept
     { return detail::from_literal<128, detail::u32, false>(literal); }
-constexpr uint256_t operator""_ull256(const char* literal) noexcept
+FWNBI_CONSTEXPR14 uint256_t operator""_ull256(const char* literal) noexcept
     { return detail::from_literal<256, detail::u32, false>(literal); }
-constexpr uint512_t operator""_ull512(const char* literal) noexcept
+FWNBI_CONSTEXPR14 uint512_t operator""_ull512(const char* literal) noexcept
     { return detail::from_literal<512, detail::u32, false>(literal); }
-constexpr uint1024_t operator""_ull1024(const char* literal) noexcept
+FWNBI_CONSTEXPR14 uint1024_t operator""_ull1024(const char* literal) noexcept
     { return detail::from_literal<1024, detail::u32, false>(literal); }
 
-constexpr int128_t operator""_ll128(const char* literal) noexcept
+FWNBI_CONSTEXPR14 int128_t operator""_ll128(const char* literal) noexcept
     { return detail::from_literal<128, detail::u32, true>(literal); }
-constexpr int256_t operator""_ll256(const char* literal) noexcept
+FWNBI_CONSTEXPR14 int256_t operator""_ll256(const char* literal) noexcept
     { return detail::from_literal<256, detail::u32, true>(literal); }
-constexpr int512_t operator""_ll512(const char* literal) noexcept
+FWNBI_CONSTEXPR14 int512_t operator""_ll512(const char* literal) noexcept
     { return detail::from_literal<512, detail::u32, true>(literal); }
-constexpr int1024_t operator""_ll1024(const char* literal) noexcept
+FWNBI_CONSTEXPR14 int1024_t operator""_ll1024(const char* literal) noexcept
     { return detail::from_literal<1024, detail::u32, true>(literal); }
 
 #define FWNBI_UINT128_C(literal)  literal ## _ull128
@@ -1232,7 +1252,7 @@ constexpr int1024_t operator""_ll1024(const char* literal) noexcept
 namespace fwnbi {
 
 template <size_t B, class D, bool S>
-constexpr basic_integer<B, D, S>::basic_integer(
+FWNBI_CONSTEXPR14 basic_integer<B, D, S>::basic_integer(
     const std::array<digit_type, digit_count>& in_digits
 ) noexcept : digits() {
     detail::copy(&in_digits.at(0), digit_count, digits);
@@ -1252,25 +1272,19 @@ struct numeric_limits<fwnbi::basic_integer<B, D, S>> : numeric_limits<D> {
     static constexpr int digits = B;
     static constexpr int digits10 = static_cast<int>(B * fwnbi::detail::log10_2);
 
-    static constexpr fwnbi::basic_integer<B, D, S> min() noexcept
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S> min() noexcept
         { return fwnbi::basic_integer<B, D, S>::min(); }
-    static constexpr fwnbi::basic_integer<B, D, S> max() noexcept
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S> max() noexcept
         { return fwnbi::basic_integer<B, D, S>::max(); }
-    static constexpr fwnbi::basic_integer<B, D, S> lowest() noexcept
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S> lowest() noexcept
         { return fwnbi::basic_integer<B, D, S>::min(); }
 
-    static constexpr fwnbi::basic_integer<B, D, S> epsilon() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
-    static constexpr fwnbi::basic_integer<B, D, S> round_error() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
-    static constexpr fwnbi::basic_integer<B, D, S> infinity() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
-    static constexpr fwnbi::basic_integer<B, D, S> quite_NaN() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
-    static constexpr fwnbi::basic_integer<B, D, S> signaling_NaN() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
-    static constexpr fwnbi::basic_integer<B, D, S> denorm_min() noexcept
-        { return fwnbi::basic_integer<B, D, S>(); }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S>       epsilon() noexcept { return {}; }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S>   round_error() noexcept { return {}; }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S>      infinity() noexcept { return {}; }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S>     quite_NaN() noexcept { return {}; }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S> signaling_NaN() noexcept { return {}; }
+    static FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, S>    denorm_min() noexcept { return {}; }
 };
 
 template <size_t B, class D, bool S>
@@ -1315,13 +1329,13 @@ string to_string(const fwnbi::basic_integer<B, D, S>& value) {
 }
 
 template <size_t B, class D = fwnbi::detail::u32>
-constexpr fwnbi::basic_integer<B, D, true> strtoll(
+FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, true> strtoll(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, true>(str, str_end, base);
 }
 
 template <size_t B, class D = fwnbi::detail::u32>
-constexpr fwnbi::basic_integer<B, D, false> strtoull(
+FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, false> strtoull(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, false>(str, str_end, base);
 }
