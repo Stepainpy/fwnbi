@@ -5,9 +5,10 @@
 Implement template class `fwnbi::basic_integer<size_t Bits, class DigitT, bool Signed>`
 with semantic as fundamental integer types.
 
-Valid values of `Bits`: $2^n$, where $n > 0$ and $\text{Bits} \ge \text{bits in DigitT}$.  
-Valid values of `DigitT`: `uint8_t`, `uint16_t`, `uint32_t`
-(and `uint64_t` if available type `__uint128_t`, GCC extension).
+Valid values of `Bits`: $\text{Bits} > 0$ and
+$\text{Bits} \equiv 0 \pmod{\text{bits in DigitT}}$.  
+Valid values of `DigitT`: `fwnbi::digit::u8`, `fwnbi::digit::u16`, `fwnbi::digit::u32`
+(and `fwnbi::digit::u64` if available type `__uint128_t`, GCC extension).
 
 For multiplication use, the Karatsuba algorithm.
 
@@ -57,8 +58,8 @@ For multiplication use, the Karatsuba algorithm.
 `void bit(size_t, bool)` - set bit by index, $0 \le \text{index} < \text{Bits}$  
 `uint8_t hex(size_t)` - return value of hex digit by index, $0 \le \text{index} < \frac{\text{Bits}}{4}$  
 `void hex(size_t, uint8_t)` - set hex digit by index, $0 \le \text{index} < \frac{\text{Bits}}{4}$  
-`void split(basic_integer<Bits/2, ...>&, basic_integer<Bits/2, ...>&)` - split current integer by upper and lower parts  
-`void merge(const basic_integer<Bits/2, ...>&, const basic_integer<Bits/2, ...>&)` - merge upper and lower parts to current integer  
+`void split(basic_integer<BitsU, ...>&, basic_integer<BitsL, ...>&)` - split current integer by upper and lower parts  
+`void merge(const basic_integer<BitsU, ...>&, const basic_integer<BitsL, ...>&)` - merge upper and lower parts to current integer  
 `basic_integer<BgBits, ...> expand()` - expand bit width without copy sign bit, $\text{BgBits} > \text{Bits}$  
 `bool add_with_carry(const basic_integer<...>&, bool = false)` - add first and second argument to integer and return carry  
 `bool add_with_carry(digit_type, bool = false)` - add first and second argument to integer and return carry  
@@ -83,7 +84,7 @@ For multiplication use, the Karatsuba algorithm.
 
 ### Default provided type aliases
 
-`uintN_t<Bits, DigitT = uint32_t>`/`intN_t<Bits, DigitT = uint32_t>` - aliases with preset signedness  
+`uintN_t<Bits, DigitT = fwnbi::digit::u32>`/`intN_t<Bits, DigitT = fwnbi::digit::u32>` - aliases with preset signedness  
 `uint128_t`/`uint256_t`/`uint512_t`/`uint1024_t` - unsigned aliases  
 `int128_t`/`int256_t`/`int512_t`/`int1024_t` - signed aliases
 

@@ -137,9 +137,10 @@ constexpr size_t clz(T n) noexcept {
 
 template <size_t Bits, class DigitT, bool Signed>
 class basic_integer {
-    static_assert(!(Bits & (Bits - 1)), "Bit width isn't power of 2");
-    static_assert(Bits >= detail::bitsof<DigitT>::value,
-        "Bit width less than bits in digit type");
+    static_assert(
+        Bits > 0 && Bits % detail::bitsof<DigitT>::value == 0,
+        "Bits is not a multiple of digit width"
+    );
 
 public:
     using        digit_type = DigitT;
@@ -283,19 +284,20 @@ public:
         (digits[d_i] &= mask) |= digit_type(value & 15) << h_i;
     }
 
-    constexpr void split(
-        basic_integer<Bits / 2, DigitT, Signed>& upper,
-        basic_integer<Bits / 2, DigitT, Signed>& lower
-    ) const noexcept {
-        static_assert(bit_width / 2 >= digit_width, "Cannot split one-digit integer");
+    template <size_t BitsU, size_t BitsL>
+    constexpr auto split(
+        basic_integer<BitsU, DigitT, Signed>& upper,
+        basic_integer<BitsL, DigitT, Signed>& lower
+    ) const noexcept -> detail::enable_if_t<BitsU + BitsL == Bits, void> {
         detail::copy(digits                    , lower.digit_count, lower.digits);
         detail::copy(digits + lower.digit_count, upper.digit_count, upper.digits);
     }
 
-    constexpr void merge(
-        const basic_integer<Bits / 2, DigitT, Signed>& upper,
-        const basic_integer<Bits / 2, DigitT, Signed>& lower
-    ) noexcept {
+    template <size_t BitsU, size_t BitsL>
+    constexpr auto merge(
+        const basic_integer<BitsU, DigitT, Signed>& upper,
+        const basic_integer<BitsL, DigitT, Signed>& lower
+    ) noexcept -> detail::enable_if_t<BitsU + BitsL == Bits, void> {
         digit_type* middle =
         detail::copy(lower.digits, lower.digit_count, digits);
         detail::copy(upper.digits, upper.digit_count, middle);
@@ -618,30 +620,33 @@ struct karatsuba {
         const basic_integer<Bt::value, D, S>& lhs,
         const basic_integer<Bt::value, D, S>& rhs
     ) noexcept {
-        constexpr size_t B = Bt::value;
-        using int2B = basic_integer<B*2, D, false>;
+        constexpr size_t near_p2 =
+            size_t(1) << (bitsof<size_t>::value - clz(Bt::value - 1));
+        using int2B = basic_integer<near_p2*2, D, false>;
 
-        basic_integer<B/2, D, S> x0, x1, x2;
-        basic_integer<B/2, D, S> y0, y1, y2;
-        lhs.split(x1, x0); x2 = x1;
-        rhs.split(y1, y0); y2 = y1;
+        basic_integer<near_p2  , D, S> x10 = lhs;
+        basic_integer<near_p2  , D, S> y10 = rhs;
+        basic_integer<near_p2/2, D, S> x0, x1, x2;
+        basic_integer<near_p2/2, D, S> y0, y1, y2;
+        x10.split(x1, x0); x2 = x1;
+        y10.split(y1, y0); y2 = y1;
 
         bool xc = x2.add_with_carry(x0);
         bool yc = y2.add_with_carry(y0);
 
-        int2B z0 = karatsuba<size_s<B/2>, D, S>::calc(x0, y0).template expand<B*2>();
-        int2B z2 = karatsuba<size_s<B/2>, D, S>::calc(x1, y1).template expand<B*2>();
-        int2B z3 = karatsuba<size_s<B/2>, D, S>::calc(x2, y2).template expand<B*2>();
+        int2B z0 = karatsuba<size_s<near_p2/2>, D, S>::calc(x0, y0).template expand<near_p2*2>();
+        int2B z2 = karatsuba<size_s<near_p2/2>, D, S>::calc(x1, y1).template expand<near_p2*2>();
+        int2B z3 = karatsuba<size_s<near_p2/2>, D, S>::calc(x2, y2).template expand<near_p2*2>();
 
-        int2B ex2 = x2.template expand<B*2>();
-        int2B ey2 = y2.template expand<B*2>();
+        int2B ex2 = x2.template expand<near_p2*2>();
+        int2B ey2 = y2.template expand<near_p2*2>();
 
-        if (xc) z3 += ey2 << B / 2;
-        if (yc) z3 += ex2 << B / 2;
-        if (xc && yc) z3 += int2B(1) << B;
+        if (xc) z3 += ey2 << near_p2 / 2;
+        if (yc) z3 += ex2 << near_p2 / 2;
+        if (xc && yc) z3 += int2B(1) << near_p2;
         int2B z1 = z3 - z2 - z0;
 
-        return (z2 << B) + (z1 << (B / 2)) + z0;
+        return (z2 << near_p2) + (z1 << (near_p2 / 2)) + z0;
     }
 };
 
@@ -928,11 +933,14 @@ constexpr basic_integer<B, D, S> strto_base(
 
 template <class Bt, class D> struct clz_t {
     static constexpr size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
-        constexpr size_t B = Bt::value;
-        basic_integer<B/2, D, false> upper, lower;
+        using intB = basic_integer<Bt::value, D, false>;
+        constexpr size_t upper_width = intB::digit_count / 2;
+        constexpr size_t lower_width = intB::digit_count - upper_width;
+        basic_integer<upper_width * intB::digit_width, D, false> upper;
+        basic_integer<lower_width * intB::digit_width, D, false> lower;
         value.split(upper, lower);
-        return upper ? clz_t<size_s<B/2>, D>::calc(upper)
-            : B/2    + clz_t<size_s<B/2>, D>::calc(lower);
+        return upper           ? clz_t<size_s<upper.bit_width>, D>::calc(upper)
+            :  upper.bit_width + clz_t<size_s<lower.bit_width>, D>::calc(lower);
     }
 };
 
@@ -947,11 +955,14 @@ template <class D> struct clz_t<typename bitsof<D>::type, D> {
 
 template <class Bt, class D> struct ctz_t {
     static constexpr size_t calc(const basic_integer<Bt::value, D, false>& value) noexcept {
-        constexpr size_t B = Bt::value;
-        basic_integer<B/2, D, false> upper, lower;
+        using intB = basic_integer<Bt::value, D, false>;
+        constexpr size_t upper_width = intB::digit_count / 2;
+        constexpr size_t lower_width = intB::digit_count - upper_width;
+        basic_integer<upper_width * intB::digit_width, D, false> upper;
+        basic_integer<lower_width * intB::digit_width, D, false> lower;
         value.split(upper, lower);
-        return lower ? ctz_t<size_s<B/2>, D>::calc(lower)
-            : B/2    + ctz_t<size_s<B/2>, D>::calc(upper);
+        return lower           ? ctz_t<size_s<lower.bit_width>, D>::calc(lower)
+            :  lower.bit_width + ctz_t<size_s<upper.bit_width>, D>::calc(upper);
     }
 };
 
@@ -1127,7 +1138,7 @@ constexpr basic_integer<B*2, D, false> lcm(
 ) noexcept {
     const basic_integer<B, D, false> gcd_res = gcd(lhs, rhs);
     if (!gcd_res) return basic_integer<B*2, D, false>();
-    return lhs / gcd_res * rhs;
+    return fullmull(lhs / gcd_res, rhs);
 }
 
 template <size_t Bits, class DigitT = detail::u32>
