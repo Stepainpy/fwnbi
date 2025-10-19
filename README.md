@@ -37,7 +37,7 @@ For multiplication use, the Karatsuba algorithm.
 `basic_integer(const std::array<digit_type, digit_count>&)` - create integer from std::array of digits
 
 **Conversions:**  
-`bool` - `true` if integer is zero, otherwise `false`  
+`bool` - `false` if integer is zero, otherwise `true`  
 `digit_type` - return first digit  
 `double_digit_type` - return first and second digit  
 `basic_integer<!Signed, ...>` - toggle sign of integer  
