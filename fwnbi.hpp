@@ -1524,13 +1524,16 @@ constexpr from_chars_result from_chars(
 
 template <class CharT, size_t B, class D, bool S>
 struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
+private:
     enum class fmt_base  { bin, Bin, oct, dec, hex, Hex } base = fmt_base::dec;
-    enum class fmt_align { left, center, right } align = fmt_align::right;
+    enum class fmt_align { none, left, center, right } align = fmt_align::none;
     enum class fmt_sign  { none, plus, space } sign = fmt_sign::none;
+    bool use_zero_fill = false;
     bool use_prefix = false;
     char fill_char = ' ';
     uint_least16_t width = 0;
 
+public:
     template <class ParseCtx>
     constexpr ParseCtx::iterator parse(ParseCtx& ctx) {
         auto it = ctx.begin();
@@ -1556,6 +1559,9 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
 
         if (it != ctx.end() && *it == '#')
             { use_prefix = true; ++it; }
+
+        if (it != ctx.end() && *it == '0')
+            { use_zero_fill = true; ++it; }
 
         if (it != ctx.end() && *it != '0' && fwnbi::detail::cexpr_isdigit(*it))
             for (size_t i = 0; i < 5 && it != ctx.end()
@@ -1617,12 +1623,17 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
                     base == fmt_base::Hex); break;
         }
 
-        if (width == 0)
-            return copy(buffer, end, ctx.out());
-
         auto out = ctx.out();
         ptrdiff_t n = static_cast<ptrdiff_t>(width) - (end - buffer);
-        /*  */ if (align == fmt_align::left) {
+
+        /*  */ if (align == fmt_align::none) {
+            char* buf_begin = buffer + (
+                base != fmt_base::dec && base != fmt_base::oct ? 2 : 0);
+            out = copy(buffer, buf_begin, out);
+            if (use_zero_fill && n > 0)
+                for (size_t i = n; i --> 0;) *out++ = '0';
+            out = copy(buf_begin, end, out);
+        } else if (align == fmt_align::left) {
             out = copy(buffer, end, out);
             if (n > 0) for (size_t i = n; i --> 0;) *out++ = fill_char;
         } else if (align == fmt_align::right) {
@@ -1633,6 +1644,7 @@ struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
             out = copy(buffer, end, out);
             if (n-n/2 > 0) for (size_t i = n-n/2; i --> 0;) *out++ = fill_char;
         }
+
         return out;
     }
 };
