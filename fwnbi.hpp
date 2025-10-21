@@ -1232,6 +1232,7 @@ FWNBI_CONSTEXPR14 int1024_t operator""_ll1024(const char* literal) noexcept
 
 } // namespace fwnbi
 
+#include <type_traits>
 #include <ostream>
 #include <istream>
 #include <utility>
@@ -1528,10 +1529,12 @@ private:
     enum class fmt_base  { bin, Bin, oct, dec, hex, Hex } base = fmt_base::dec;
     enum class fmt_align { none, left, center, right } align = fmt_align::none;
     enum class fmt_sign  { none, plus, space } sign = fmt_sign::none;
+    bool width_is_arg = false;
     bool use_zero_fill = false;
     bool use_prefix = false;
     char fill_char = ' ';
     uint_least16_t width = 0;
+    size_t width_id = 0;
 
 public:
     template <class ParseCtx>
@@ -1563,10 +1566,23 @@ public:
         if (it != ctx.end() && *it == '0')
             { use_zero_fill = true; ++it; }
 
-        if (it != ctx.end() && *it != '0' && fwnbi::detail::cexpr_isdigit(*it))
-            for (size_t i = 0; i < 5 && it != ctx.end()
-                && fwnbi::detail::cexpr_isdigit(*it); i++)
-                width = width * 10 + ((*it++) - '0');
+        if (it != ctx.end()) {
+            /*  */ if (*it != '0' && fwnbi::detail::cexpr_isdigit(*it)) {
+                while (it != ctx.end() && fwnbi::detail::cexpr_isdigit(*it))
+                    width = width * 10 + ((*it++) - '0');
+            } else if (*it == '{') {
+                width_is_arg = true; ++it;
+                /*  */ if (it != ctx.end() && *it == '}') {
+                    width_id = ctx.next_arg_id(); ++it;
+                } else {
+                    while (it != ctx.end() && fwnbi::detail::cexpr_isdigit(*it))
+                        width_id = width_id * 10 + ((*it++) - '0');
+                    if (it == ctx.end() || *it != '}')
+                        throw format_error("Invalid width index");
+                    ctx.check_arg_id(width_id); ++it;
+                }
+            }
+        }
 
         if (it != ctx.end())
             switch (*it++) {
@@ -1580,7 +1596,7 @@ public:
             }
 
         if (it != ctx.end() && *it != '}')
-            throw format_error("Invalid spec for fwnbi::basic_integer");
+            throw format_error("Invalid specification for fwnbi::basic_integer");
         return it;
     }
 
@@ -1623,12 +1639,27 @@ public:
                     base == fmt_base::Hex); break;
         }
 
+        ptrdiff_t field_width;
+        if (width_is_arg) {
+            field_width = visit_format_arg([](auto v) -> ptrdiff_t {
+                if constexpr (!is_integral_v<decltype(v)>)
+                    throw format_error("Width is not integer");
+                else if (v < 0 || v > numeric_limits<ptrdiff_t>::max())
+                    throw format_error("Invalid width value");
+                else
+                    return static_cast<ptrdiff_t>(v);
+            }, ctx.arg(width_id));
+        } else
+            field_width = width;
+
         auto out = ctx.out();
-        ptrdiff_t n = static_cast<ptrdiff_t>(width) - (end - buffer);
+        ptrdiff_t n = field_width - (end - buffer);
 
         /*  */ if (align == fmt_align::none) {
             char* buf_begin = buffer + (
-                base != fmt_base::dec && base != fmt_base::oct ? 2 : 0);
+                base != fmt_base::dec &&
+                base != fmt_base::oct &&
+                use_prefix ? 2 : 0);
             out = copy(buffer, buf_begin, out);
             if (use_zero_fill && n > 0)
                 for (size_t i = n; i --> 0;) *out++ = '0';
