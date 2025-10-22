@@ -1656,25 +1656,30 @@ public:
         auto out = ctx.out();
         ptrdiff_t n = field_width - (end - buffer);
 
-        /*  */ if (align == fmt_align::none) {
-            char* buf_begin = buffer + (
-                base != fmt_base::dec &&
-                base != fmt_base::oct &&
-                use_prefix ? 2 : 0);
-            out = copy(buffer, buf_begin, out);
-            if (use_zero_fill && n > 0)
-                for (size_t i = n; i --> 0;) *out++ = '0';
-            out = copy(buf_begin, end, out);
-        } else if (align == fmt_align::left) {
-            out = copy(buffer, end, out);
-            if (n > 0) for (size_t i = n; i --> 0;) *out++ = fill_char;
-        } else if (align == fmt_align::right) {
-            if (n > 0) for (size_t i = n; i --> 0;) *out++ = fill_char;
-            out = copy(buffer, end, out);
-        } else if (align == fmt_align::center) {
-            if (  n/2 > 0) for (size_t i =   n/2; i --> 0;) *out++ = fill_char;
-            out = copy(buffer, end, out);
-            if (n-n/2 > 0) for (size_t i = n-n/2; i --> 0;) *out++ = fill_char;
+        switch (align) {
+            case fmt_align::none: {
+                char* buf_begin = buffer + (
+                    base != fmt_base::dec &&
+                    base != fmt_base::oct &&
+                    use_prefix ? 2 : 0);
+                out = copy(buffer, buf_begin, out);
+                if (use_zero_fill && n > 0)
+                    for (size_t i = n; i --> 0;) *out++ = '0';
+                out = copy(buf_begin, end, out);
+            } break;
+            case fmt_align::left: {
+                out = copy(buffer, end, out);
+                if (n > 0) for (size_t i = n; i --> 0;) *out++ = fill_char;
+            } break;
+            case fmt_align::right: {
+                if (n > 0) for (size_t i = n; i --> 0;) *out++ = fill_char;
+                out = copy(buffer, end, out);
+            } break;
+            case fmt_align::center: {
+                if (  n/2 > 0) for (size_t i =   n/2; i --> 0;) *out++ = fill_char;
+                out = copy(buffer, end, out);
+                if (n-n/2 > 0) for (size_t i = n-n/2; i --> 0;) *out++ = fill_char;
+            } break;
         }
 
         return out;
