@@ -1641,14 +1641,19 @@ public:
 
         ptrdiff_t field_width;
         if (width_is_arg) {
-            field_width = visit_format_arg([](auto v) -> ptrdiff_t {
+            auto visitor = [](auto v) -> ptrdiff_t {
                 if constexpr (!is_integral_v<decltype(v)>)
                     throw format_error("Width is not integer");
                 else if (v < 0 || v > numeric_limits<ptrdiff_t>::max())
                     throw format_error("Invalid width value");
                 else
                     return static_cast<ptrdiff_t>(v);
-            }, ctx.arg(width_id));
+            };
+#if 0 // TODO: replace to check is C++26
+            field_width = ctx.arg(width_id).visit(visitor);
+#else
+            field_width = visit_format_arg(visitor, ctx.arg(width_id));
+#endif
         } else
             field_width = width;
 
