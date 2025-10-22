@@ -6,6 +6,7 @@
  *   rotate array - https://stackoverflow.com/a/31175162
  *   to string    - https://stackoverflow.com/a/8023937
  *   division     - https://en.wikipedia.org/wiki/Division_algorithm
+ *   modpow       - https://en.wikipedia.org/wiki/Modular_exponentiation
  *   square       - https://ido.tsu.ru/iop_res1/teorcrypto/text/1_3.html
  *   gcd          - https://ido.tsu.ru/iop_res1/teorcrypto/text/1_26.html
  */
@@ -1092,6 +1093,23 @@ FWNBI_CONSTEXPR14 size_t popcount(const basic_integer<B, D, false>& value) noexc
     for (size_t i = 0; i < value.digit_count; i++)
         out += detail::popcount(value[i]);
     return out;
+}
+
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> modpow(
+    const basic_integer<B, D, false>& base,
+    const basic_integer<B, D, false>& exponent,
+    const basic_integer<B, D, false>& modulo
+) noexcept {
+    basic_integer<B  , D, false> r = D(1);
+    basic_integer<B  , D, false> b = base % modulo, e = exponent;
+    basic_integer<B*2, D, false> m = modulo;
+    for (; e; e >>= 1) {
+        if (e[0] % 2)
+            r = fullmul(r, b) % m;
+        b = fullmul(b, b) % m;
+    }
+    return r;
 }
 
 template <size_t B, class D, bool S>
