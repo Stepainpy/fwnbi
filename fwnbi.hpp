@@ -1544,14 +1544,14 @@ public:
             return it;
 
         if (*it != '{' && *it != '}' && it + 1 != ctx.end() &&
-            (it[1] == '<' || it[1] == '^' || it[1] == '>')) {
+            (it[1] == '<' || it[1] == '^' || it[1] == '>'))
             fill_char = *it++;
+        if (*it == '<' || *it == '^' || *it == '>')
             switch (*it++) {
                 case '<': align = fmt_align::left;   break;
                 case '^': align = fmt_align::center; break;
                 case '>': align = fmt_align::right;  break;
             }
-        }
 
         if (it != ctx.end() && (*it == '+' || *it == '-' || *it == ' '))
             switch (*it++) {
