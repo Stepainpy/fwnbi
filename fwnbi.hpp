@@ -1523,8 +1523,8 @@ constexpr from_chars_result from_chars(
 
 #if __cplusplus >= 202002L
 
-template <class CharT, size_t B, class D, bool S>
-struct formatter<fwnbi::basic_integer<B, D, S>, CharT> {
+template <size_t B, class D, bool S>
+struct formatter<fwnbi::basic_integer<B, D, S>, char> {
 private:
     enum class fmt_base  { bin, Bin, oct, dec, hex, Hex } base = fmt_base::dec;
     enum class fmt_align { none, left, center, right } align = fmt_align::none;
@@ -1537,8 +1537,8 @@ private:
     size_t width_id = 0;
 
 public:
-    template <class ParseCtx>
-    constexpr ParseCtx::iterator parse(ParseCtx& ctx) {
+    constexpr typename basic_format_parse_context<char>::iterator
+    parse(basic_format_parse_context<char>& ctx) {
         auto it = ctx.begin();
         if (it == ctx.end())
             return it;
@@ -1551,13 +1551,6 @@ public:
                 case '<': align = fmt_align::left;   break;
                 case '^': align = fmt_align::center; break;
                 case '>': align = fmt_align::right;  break;
-            }
-
-        if (it != ctx.end() && (*it == '+' || *it == '-' || *it == ' '))
-            switch (*it++) {
-                case '+': sign = fmt_sign::plus;  break;
-                case '-': sign = fmt_sign::none;  break;
-                case ' ': sign = fmt_sign::space; break;
             }
 
         if (it != ctx.end() && *it == '#')
@@ -1600,8 +1593,11 @@ public:
         return it;
     }
 
-    template <class FmtCtx>
-    FmtCtx::iterator format(const fwnbi::basic_integer<B, D, S>& value, FmtCtx& ctx) const {
+    template <class Out>
+    typename basic_format_context<Out, char>::iterator format(
+        const fwnbi::basic_integer<B, D, S>& value,
+        basic_format_context<Out, char>& ctx
+    ) const {
         char buffer[B + 4] {}, *end;
         size_t pos = 0;
 
