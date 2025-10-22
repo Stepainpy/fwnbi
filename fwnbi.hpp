@@ -1526,15 +1526,20 @@ constexpr from_chars_result from_chars(
 template <size_t B, class D, bool S>
 struct formatter<fwnbi::basic_integer<B, D, S>, char> {
 private:
-    enum class fmt_base  { bin, Bin, oct, dec, hex, Hex } base = fmt_base::dec;
-    enum class fmt_align { none, left, center, right } align = fmt_align::none;
-    enum class fmt_sign  { none, plus, space } sign = fmt_sign::none;
-    bool width_is_arg = false;
+    enum class fmt_base  { bin, Bin, oct, dec, hex, Hex };
+    enum class fmt_align { none, left, center, right };
+    enum class fmt_sign  { none, plus, space };
+
+private:
+    fmt_align align = fmt_align::none;
+    fmt_sign  sign  = fmt_sign ::none;
+    fmt_base  base  = fmt_base ::dec;
     bool use_zero_fill = false;
-    bool use_prefix = false;
-    char fill_char = ' ';
-    uint_least16_t width = 0;
+    bool width_is_arg  = false;
+    bool use_prefix    = false;
     size_t width_id = 0;
+    int    width    = 0;
+    char fill_char = ' ';
 
 public:
     constexpr typename basic_format_parse_context<char>::iterator
