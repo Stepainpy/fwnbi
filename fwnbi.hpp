@@ -1124,7 +1124,7 @@ sqr(const basic_integer<B, D, S>& value) noexcept {
 
 template <size_t B, class D> FWNBI_CONSTEXPR14 basic_integer<B, D, false>
 isqrt(const basic_integer<B, D, false>& value) noexcept {
-    auto out = basic_integer<B, D, false>(1) << ((B - clz(value) + 1) >> 1);
+    auto out = basic_integer<B, D, false>(1) << ((value.width() + 1) >> 1);
     while (true) {
         auto newout = (out + value / out) >> 1;
         if (newout >= out) return out;
