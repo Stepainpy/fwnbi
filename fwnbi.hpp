@@ -28,6 +28,7 @@
 
 #ifdef _MSC_VER
 #  include <intrin.h>
+#  include <stdlib.h>
 #endif
 
 #if __cplusplus >= 201402L
@@ -134,6 +135,11 @@ constexpr size_t clz(T n) noexcept {
     return n ? __builtin_clzll(n) - bitsof<unsigned long long>::value
         + bitsof<T>::value : bitsof<T>::value;
 }
+
+constexpr u8  bswap(u8  n) noexcept { return n; }
+constexpr u16 bswap(u16 n) noexcept { return __builtin_bswap16(n); }
+constexpr u32 bswap(u32 n) noexcept { return __builtin_bswap32(n); }
+constexpr u64 bswap(u64 n) noexcept { return __builtin_bswap64(n); }
 #elif defined(_MSC_VER)
 FWNBI_CONSTEXPR14 size_t ctz(u64 n) noexcept
     { unsigned long out = 0; return _BitScanForward64(&out, n) ? out : 64; }
@@ -143,6 +149,11 @@ FWNBI_CONSTEXPR14 size_t clz(T n) noexcept {
     unsigned long out = 0; return _BitScanReverse64(&out, n)
         ? bitsof<T>::value - 1 - out : bitsof<T>::value;
 }
+
+FWNBI_CONSTEXPR14 u8  bswap(u8  n) noexcept { return n; }
+FWNBI_CONSTEXPR14 u16 bswap(u16 n) noexcept { return _byteswap_ushort(n); }
+FWNBI_CONSTEXPR14 u32 bswap(u32 n) noexcept { return _byteswap_ulong (n); }
+FWNBI_CONSTEXPR14 u64 bswap(u64 n) noexcept { return _byteswap_uint64(n); }
 #else
 FWNBI_CONSTEXPR14 size_t ctz(u64 n) noexcept {
     size_t out = 0;
@@ -158,6 +169,28 @@ FWNBI_CONSTEXPR14 size_t clz(T n) noexcept {
     if (!n) return bitsof<T>::value;
     for (; (n & mask) == 0; n <<= 1) ++out;
     return out;
+}
+
+constexpr u8  bswap(u8  n) noexcept { return n; }
+constexpr u16 bswap(u16 n) noexcept {
+    return (n & UINT16_C(0xFF00)) >> 8
+        |  (n & UINT16_C(0x00FF)) << 8;
+}
+constexpr u32 bswap(u32 n) noexcept {
+    return (n & UINT32_C(0xFF000000)) >> 24
+        |  (n & UINT32_C(0x00FF0000)) >>  8
+        |  (n & UINT32_C(0x0000FF00)) <<  8
+        |  (n & UINT32_C(0x000000FF)) << 24;
+}
+constexpr u64 bswap(u64 n) noexcept {
+    return (n & UINT64_C(0xFF00000000000000)) >> 56
+        |  (n & UINT64_C(0x00FF000000000000)) >> 40
+        |  (n & UINT64_C(0x0000FF0000000000)) >> 24
+        |  (n & UINT64_C(0x000000FF00000000)) >>  8
+        |  (n & UINT64_C(0x00000000FF000000)) <<  8
+        |  (n & UINT64_C(0x0000000000FF0000)) << 24
+        |  (n & UINT64_C(0x000000000000FF00)) << 40
+        |  (n & UINT64_C(0x00000000000000FF)) << 56;
 }
 #endif
 
@@ -628,6 +661,8 @@ public:
     rotl(basic_integer<B, D, false> lhs, int shift) noexcept;
     template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
     rotr(basic_integer<B, D, false> lhs, int shift) noexcept;
+    template <size_t B, class D> friend FWNBI_CONSTEXPR14 basic_integer<B, D, false>
+    byteswap(basic_integer<B, D, false> value) noexcept;
 
 private:
     template <size_t B, class D, bool S> friend class basic_integer;
@@ -1106,6 +1141,16 @@ FWNBI_CONSTEXPR14 size_t popcount(const basic_integer<B, D, false>& value) noexc
     for (size_t i = 0; i < value.digit_count; i++)
         out += detail::popcount(value[i]);
     return out;
+}
+
+template <size_t B, class D>
+FWNBI_CONSTEXPR14 basic_integer<B, D, false> byteswap(
+    basic_integer<B, D, false> value
+) noexcept {
+    for (size_t i = value.digit_count; i --> 0;)
+        value[i] = detail::bswap(value[i]);
+    detail::reverse(value.digits, value.digits + value.digit_count);
+    return value;
 }
 
 template <size_t B, class D>

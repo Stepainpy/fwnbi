@@ -79,6 +79,8 @@ Available `constexpr` function since C++14.
 `clz` - return count `0`-bit from MSB to before first `1`-bit  
 `ctz` - return count `0`-bit from LSB to before first `1`-bit  
 `popcount` - return count of `1`-bit in integer  
+`byteswap` - swap byte order in integer (`1234` <=> `4321`)  
+`modpow` - modular exponentiation function  
 `sqr` - return square of integer with twice width  
 `isqrt` - return `floor(sqrt(x))` of integer  
 `gcd` - return greate common divisor  
