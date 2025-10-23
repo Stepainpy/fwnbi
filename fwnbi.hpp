@@ -42,6 +42,12 @@
 #  define FWNBI_CONSTEXPR20
 #endif
 
+#if defined(__GNUC__) && defined(__SIZEOF_INT128__)
+#  define FWNBI_ENABLE_UINT128_TYPE 1
+#else
+#  define FWNBI_ENABLE_UINT128_TYPE 0
+#endif
+
 namespace std { template <class T, size_t N> struct array; }
 
 namespace fwnbi {
@@ -69,13 +75,22 @@ template <> struct make_double_digit<u8 > { using type = u16; };
 template <> struct make_double_digit<u16> { using type = u32; };
 template <> struct make_double_digit<u32> { using type = u64; };
 template <> struct make_double_digit<u64> {
-#ifdef __SIZEOF_INT128__
+#if FWNBI_ENABLE_UINT128_TYPE
     using type = __uint128_t;
 #endif
 };
 
 template <class T>
 using make_double_digit_t = typename make_double_digit<T>::type;
+
+template <size_t B> struct biggest_digit {
+    using type = conditional_t<
+        FWNBI_ENABLE_UINT128_TYPE &&
+        B % 64 == 0, u64, conditional_t<
+        B % 32 == 0, u32, conditional_t<
+        B % 16 == 0, u16, u8>>>;
+};
+template <size_t B> using biggest_digit_t = typename biggest_digit<B>::type;
 
 template <size_t V> struct size_s { static constexpr size_t value = V; };
 template <class  T> struct bitsof {
@@ -1042,8 +1057,7 @@ FWNBI_CONSTEXPR14 basic_integer<B, D, S> abs(basic_integer<B, D, S> value) noexc
 template <size_t B, class D>
 FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotl(
     basic_integer<B, D, false> lhs, size_t shift
-) noexcept {
-    shift %= B;
+) noexcept { shift %= B;
     lhs.digit_rotate_left(shift / lhs.digit_width);
     lhs.small_rotate_left(shift % lhs.digit_width);
     return lhs;
@@ -1052,8 +1066,7 @@ FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotl(
 template <size_t B, class D>
 FWNBI_CONSTEXPR14 basic_integer<B, D, false> rotr(
     basic_integer<B, D, false> lhs, size_t shift
-) noexcept {
-    shift %= B;
+) noexcept { shift %= B;
     lhs.digit_rotate_right(shift / lhs.digit_width);
     lhs.small_rotate_right(shift % lhs.digit_width);
     return lhs;
@@ -1177,9 +1190,9 @@ FWNBI_CONSTEXPR14 basic_integer<B*2, D, false> lcm(
     return fullmull(lhs / gcd_res, rhs);
 }
 
-template <size_t Bits, class DigitT = detail::u32>
+template <size_t Bits, class DigitT = detail::biggest_digit_t<Bits>>
 using uintN_t = basic_integer<Bits, DigitT, false>;
-template <size_t Bits, class DigitT = detail::u32>
+template <size_t Bits, class DigitT = detail::biggest_digit_t<Bits>>
 using  intN_t = basic_integer<Bits, DigitT,  true>;
 
 using uint128_t  = uintN_t< 128>;
@@ -1219,22 +1232,22 @@ using detail::u64;
 namespace literals {
 
 FWNBI_CONSTEXPR14 uint128_t operator""_ull128(const char* literal) noexcept
-    { return detail::from_literal<128, detail::u32, false>(literal); }
+    { return detail::from_literal< 128, detail::biggest_digit_t< 128>, false>(literal); }
 FWNBI_CONSTEXPR14 uint256_t operator""_ull256(const char* literal) noexcept
-    { return detail::from_literal<256, detail::u32, false>(literal); }
+    { return detail::from_literal< 256, detail::biggest_digit_t< 256>, false>(literal); }
 FWNBI_CONSTEXPR14 uint512_t operator""_ull512(const char* literal) noexcept
-    { return detail::from_literal<512, detail::u32, false>(literal); }
+    { return detail::from_literal< 512, detail::biggest_digit_t< 512>, false>(literal); }
 FWNBI_CONSTEXPR14 uint1024_t operator""_ull1024(const char* literal) noexcept
-    { return detail::from_literal<1024, detail::u32, false>(literal); }
+    { return detail::from_literal<1024, detail::biggest_digit_t<1024>, false>(literal); }
 
 FWNBI_CONSTEXPR14 int128_t operator""_ll128(const char* literal) noexcept
-    { return detail::from_literal<128, detail::u32, true>(literal); }
+    { return detail::from_literal< 128, detail::biggest_digit_t< 128>, true>(literal); }
 FWNBI_CONSTEXPR14 int256_t operator""_ll256(const char* literal) noexcept
-    { return detail::from_literal<256, detail::u32, true>(literal); }
+    { return detail::from_literal< 256, detail::biggest_digit_t< 256>, true>(literal); }
 FWNBI_CONSTEXPR14 int512_t operator""_ll512(const char* literal) noexcept
-    { return detail::from_literal<512, detail::u32, true>(literal); }
+    { return detail::from_literal< 512, detail::biggest_digit_t< 512>, true>(literal); }
 FWNBI_CONSTEXPR14 int1024_t operator""_ll1024(const char* literal) noexcept
-    { return detail::from_literal<1024, detail::u32, true>(literal); }
+    { return detail::from_literal<1024, detail::biggest_digit_t<1024>, true>(literal); }
 
 #define FWNBI_UINT128_C(literal)  literal ## _ull128
 #define FWNBI_UINT256_C(literal)  literal ## _ull256
@@ -1345,13 +1358,13 @@ string to_string(const fwnbi::basic_integer<B, D, S>& value) {
     return string(buffer, end - buffer);
 }
 
-template <size_t B, class D = fwnbi::detail::u32>
+template <size_t B, class D = fwnbi::detail::biggest_digit_t<B>>
 FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, true> strtoll(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, true>(str, str_end, base);
 }
 
-template <size_t B, class D = fwnbi::detail::u32>
+template <size_t B, class D = fwnbi::detail::biggest_digit_t<B>>
 FWNBI_CONSTEXPR14 fwnbi::basic_integer<B, D, false> strtoull(
     const char* str, char** str_end, int base) noexcept {
     return fwnbi::detail::strto_base<B, D, false>(str, str_end, base);
