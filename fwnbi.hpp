@@ -207,6 +207,11 @@ public:
     using        digit_type = DigitT;
     using double_digit_type = detail::make_double_digit_t<DigitT>;
 
+    using       reference =       digit_type&;
+    using const_reference = const digit_type&;
+    using       iterator  =       digit_type*;
+    using const_iterator  = const digit_type*;
+
 public:
     static constexpr size_t   bit_width = Bits;
     static constexpr size_t digit_width = detail::bitsof<DigitT>::value;
@@ -395,6 +400,18 @@ public:
         }
     }
 
+public:
+    FWNBI_CONSTEXPR14       digit_type* data()       noexcept { return digits; }
+    FWNBI_CONSTEXPR14 const digit_type* data() const noexcept { return digits; }
+
+    FWNBI_CONSTEXPR14       iterator  begin()       noexcept { return digits; }
+    FWNBI_CONSTEXPR14 const_iterator  begin() const noexcept { return digits; }
+    FWNBI_CONSTEXPR14 const_iterator cbegin() const noexcept { return digits; }
+
+    FWNBI_CONSTEXPR14       iterator  end()       noexcept { return digits + digit_count; }
+    FWNBI_CONSTEXPR14 const_iterator  end() const noexcept { return digits + digit_count; }
+    FWNBI_CONSTEXPR14 const_iterator cend() const noexcept { return digits + digit_count; }
+
 private:
     FWNBI_CONSTEXPR14 void small_shift_left(size_t shift) noexcept {
         if (!shift || shift >= digit_width) return;
@@ -488,8 +505,8 @@ private:
     }
 
 public:
-    FWNBI_CONSTEXPR14       digit_type& operator[](size_t index)       noexcept { return digits[index]; }
-    FWNBI_CONSTEXPR14 const digit_type& operator[](size_t index) const noexcept { return digits[index]; }
+    FWNBI_CONSTEXPR14       reference operator[](size_t index)       noexcept { return digits[index]; }
+    FWNBI_CONSTEXPR14 const_reference operator[](size_t index) const noexcept { return digits[index]; }
 
 public:
     FWNBI_CONSTEXPR14 basic_integer operator+() const noexcept { return *this; }

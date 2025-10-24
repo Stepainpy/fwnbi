@@ -20,7 +20,11 @@ Available `constexpr` function since C++14.
 
 **Types:**  
 `digit_type` - equal template parameter `DigitT`  
-`double_digit_type` - type with width twice as wide as `digit_type`
+`double_digit_type` - type with width twice as wide as `digit_type`  
+`reference` - equal `digit_type&`  
+`const_reference` - equal `const digit_type&`  
+`iterator` - equal `digit_type*`  
+`const_iterator` - equal `const digit_type*`
 
 **Static constants:**  
 `bit_width` - equal template parameter `Bits`  
@@ -67,8 +71,15 @@ Available `constexpr` function since C++14.
 `bool add_with_carry(digit_type, bool = false)` - add first and second argument to integer and return carry  
 `void swap(basic_integer<...>&)` - swap value of current integer and argument
 
+**Range methods:**  
+`[const] digit_type* data() [const]` - return [const] pointer to begin of digit array  
+`[const_]iterator begin() [const]` - return begin [const] iterator for digits  
+`const_iterator cbegin() const` - return begin const iterator for digits  
+`[const_]iterator end() [const]` - return end [const] iterator for digits  
+`const_iterator cend() const` - return end const iterator for digits
+
 **Additional operators:**  
-`digit_type& operator[](size_t)` - return digit by index  
+`[const_]reference operator[](size_t) [const]` - return [const] reference to digit by index  
 `<<`, `>>`, `<<=`, `>>=` - if count is negative turn left/right to right/left
 
 ### Functions
