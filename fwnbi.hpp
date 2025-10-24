@@ -240,8 +240,8 @@ public:
 
 public:
     FWNBI_CONSTEXPR14 operator bool() const noexcept {
-        for (size_t i = 0; i < digit_count; i++)
-            if (digits[i]) return true;
+        for (auto digit : digits)
+            if (digit) return true;
         return false;
     }
 
@@ -317,8 +317,7 @@ public:
     }
 
     FWNBI_CONSTEXPR14 void clear() noexcept {
-        for (size_t i = 0; i < digit_count; i++)
-            digits[i] = digit_type(0);
+        for (auto& digit : digits) digit = digit_type(0);
     }
 
     FWNBI_CONSTEXPR14 bool bit(size_t index) const noexcept {
@@ -519,8 +518,7 @@ public:
 
     FWNBI_CONSTEXPR14 basic_integer operator~() const noexcept {
         basic_integer out = *this;
-        for (size_t i = 0; i < out.digit_count; i++)
-            out.digits[i] = ~out.digits[i];
+        for (auto& digit : out.digits) digit = ~digit;
         return out;
     }
 
@@ -716,9 +714,9 @@ struct karatsuba {
         int2B ex2 = x2.template expand<near_p2*2>();
         int2B ey2 = y2.template expand<near_p2*2>();
 
-        if (xc) z3 += ey2 << near_p2 / 2;
-        if (yc) z3 += ex2 << near_p2 / 2;
-        if (xc && yc) z3 += int2B(1) << near_p2;
+        if (xc      ) z3 +=      ey2 << near_p2 / 2;
+        if (      yc) z3 +=      ex2 << near_p2 / 2;
+        if (xc && yc) z3 += int2B(1) << near_p2    ;
         int2B z1 = z3 - z2 - z0;
 
         return (z2 << near_p2) + (z1 << (near_p2 / 2)) + z0;
@@ -1155,8 +1153,8 @@ FWNBI_CONSTEXPR14 size_t ctz(const basic_integer<B, D, false>& value) noexcept {
 template <size_t B, class D>
 FWNBI_CONSTEXPR14 size_t popcount(const basic_integer<B, D, false>& value) noexcept {
     size_t out = 0;
-    for (size_t i = 0; i < value.digit_count; i++)
-        out += detail::popcount(value[i]);
+    for (auto digit : value)
+        out += detail::popcount(digit);
     return out;
 }
 
@@ -1164,8 +1162,7 @@ template <size_t B, class D>
 FWNBI_CONSTEXPR14 basic_integer<B, D, false> byteswap(
     basic_integer<B, D, false> value
 ) noexcept {
-    for (size_t i = value.digit_count; i --> 0;)
-        value[i] = detail::bswap(value[i]);
+    for (auto& digit : value) digit = detail::bswap(digit);
     detail::reverse(value.digits, value.digits + value.digit_count);
     return value;
 }
