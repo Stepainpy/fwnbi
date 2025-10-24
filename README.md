@@ -7,7 +7,7 @@ with semantic as fundamental integer types.
 
 Valid values of `Bits`: $\text{Bits} > 0$ and
 $\text{Bits} \equiv 0 \pmod{\text{bits in DigitT}}$.  
-Valid values of `DigitT`: `fwnbi::digit::u8`, `fwnbi::digit::u16`, `fwnbi::digit::u32`
+Valid values of `DigitT`: `fwnbi::digit::u(8/16/32)`
 (and `fwnbi::digit::u64` if available type `__uint128_t`, GCC extension).
 
 For multiplication use, the Karatsuba algorithm.
@@ -99,9 +99,11 @@ Available `constexpr` function since C++14.
 
 ### Default provided type aliases
 
-`uintN_t<Bits, DigitT = fwnbi::digit::u32>`/`intN_t<Bits, DigitT = fwnbi::digit::u32>` - aliases with preset signedness  
-`uint128_t`/`uint256_t`/`uint512_t`/`uint1024_t` - unsigned aliases  
-`int128_t`/`int256_t`/`int512_t`/`int1024_t` - signed aliases
+`[u]intN_t<Bits, DigitT = /* BIGGEST DIGIT */>` - aliases with preset signedness  
+`uint(128/256/512/1024)_t` - unsigned aliases  
+`int(128/256/512/1024)_t` - signed aliases
+
+`/* BIGGEST DIGIT */` - biggest digit type for `Bits`
 
 ## Namespace `fwnbi::digit`
 
@@ -121,8 +123,8 @@ Available `constexpr` function since C++14.
 `struct make_unsigned`/`struct make_signed` - return type  
 `struct hash` - calculate function FNVa-64 for bytes in integer  
 `std::string to_string(...)` - convert integer to `std::string`  
-`... strtoll(...)` - convert C-string to signed integer  
-`... strtoull(...)` - convert C-string to unsigned integer  
+`... strtoll<...>(...)` - convert C-string to signed integer  
+`... strtoull<...>(...)` - convert C-string to unsigned integer  
 `... operator<<(...)` - output to `std::basic_ostream<...>`  
 `... operator>>(...)` - input from `std::basic_istream<...>`  
 `... to_chars(...)` *since C++17* - fast convert to string  
