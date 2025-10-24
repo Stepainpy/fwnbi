@@ -37,6 +37,12 @@
 #  define FWNBI_CONSTEXPR14
 #endif
 
+#if __cplusplus >= 201703L
+#  define FWNBI_CONSTEXPR17 constexpr
+#else
+#  define FWNBI_CONSTEXPR17
+#endif
+
 #if __cplusplus >= 202002L
 #  define FWNBI_CONSTEXPR20 constexpr
 #else
@@ -226,6 +232,11 @@ public:
     FWNBI_CONSTEXPR14 basic_integer& operator=(      basic_integer&&) noexcept = default;
 
     FWNBI_CONSTEXPR14 basic_integer(digit_type digit) noexcept : digits() { digits[0] = digit; }
+    FWNBI_CONSTEXPR14 basic_integer(double_digit_type dbl_digit) noexcept : digits() {
+        digits[0] = static_cast<digit_type>(dbl_digit);
+        if FWNBI_CONSTEXPR17 (digit_count > 1)
+            digits[1] = static_cast<digit_type>(dbl_digit >> digit_width);
+    }
     FWNBI_CONSTEXPR14 basic_integer(const digit_type (&in_digits)[digit_count]) noexcept
         : digits() { detail::copy(in_digits, digit_count, digits); }
     FWNBI_CONSTEXPR14 basic_integer(const std::array<digit_type, digit_count>& in_digits) noexcept;
@@ -249,7 +260,7 @@ public:
 
     FWNBI_CONSTEXPR14 operator double_digit_type() const noexcept {
         double_digit_type out = digits[0];
-        if (digit_count > 1)
+        if FWNBI_CONSTEXPR17 (digit_count > 1)
             out |= double_digit_type(digits[1]) << digit_width;
         return out;
     }
@@ -714,12 +725,12 @@ struct karatsuba {
         int2B ex2 = x2.template expand<near_p2*2>();
         int2B ey2 = y2.template expand<near_p2*2>();
 
-        if (xc      ) z3 +=      ey2 << near_p2 / 2;
-        if (      yc) z3 +=      ex2 << near_p2 / 2;
-        if (xc && yc) z3 += int2B(1) << near_p2    ;
+        if (xc      ) z3 +=     ey2     << near_p2 / 2;
+        if (      yc) z3 +=     ex2     << near_p2 / 2;
+        if (xc && yc) z3 += int2B(D(1)) << near_p2    ;
         int2B z1 = z3 - z2 - z0;
 
-        return (z2 << near_p2) + (z1 << (near_p2 / 2)) + z0;
+        return (z2 << near_p2) + (z1 << near_p2 / 2) + z0;
     }
 };
 
@@ -730,12 +741,11 @@ struct karatsuba<typename bitsof<D>::type, D, S> {
         const basic_integer<bitsof<D>::value, D, S>& rhs
     ) noexcept {
         using int2B = basic_integer<bitsof<D>::value*2, D, S>;
-        using  digit_t = typename int2B::digit_type;
-        using ddigit_t = typename int2B::double_digit_type;
-        int2B out; ddigit_t mul =
-            static_cast<ddigit_t>(lhs[0]) * static_cast<ddigit_t>(rhs[0]);
-        out[0] = static_cast<digit_t>(mul);
-        out[1] = static_cast<digit_t>(mul >> int2B::digit_width);
+        using dbl_dgt_t = typename int2B::double_digit_type;
+        int2B out(
+            static_cast<dbl_dgt_t>(lhs[0]) *
+            static_cast<dbl_dgt_t>(rhs[0])
+        );
         return out;
     }
 };

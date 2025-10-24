@@ -39,6 +39,7 @@ Available `constexpr` function since C++14.
 **Constructors:**  
 `basic_integer()` - default constructor (set all zero)  
 `basic_integer(digit_type)` - create integer from one digit  
+`basic_integer(double_digit_type)` - create integer from "two" digit  
 `basic_integer(const digit_type (&)[digit_count])` - create integer from array of digits  
 `basic_integer(const std::array<digit_type, digit_count>&)` - create integer from std::array of digits
 
