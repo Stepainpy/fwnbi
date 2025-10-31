@@ -1318,6 +1318,24 @@ FWNBI_CONSTEXPR14 int512_t operator""_ll512(const char* literal) noexcept
 FWNBI_CONSTEXPR14 int1024_t operator""_ll1024(const char* literal) noexcept
     { return detail::from_literal<1024, detail::biggest_digit_t<1024>, true>(literal); }
 
+FWNBI_CONSTEXPR14 basic_integer< 128, detail::u8, false> operator""_ull128d8(const char* literal) noexcept
+    { return detail::from_literal< 128, detail::u8, false>(literal); }
+FWNBI_CONSTEXPR14 basic_integer< 256, detail::u8, false> operator""_ull256d8(const char* literal) noexcept
+    { return detail::from_literal< 256, detail::u8, false>(literal); }
+FWNBI_CONSTEXPR14 basic_integer< 512, detail::u8, false> operator""_ull512d8(const char* literal) noexcept
+    { return detail::from_literal< 512, detail::u8, false>(literal); }
+FWNBI_CONSTEXPR14 basic_integer<1024, detail::u8, false> operator""_ull1024d8(const char* literal) noexcept
+    { return detail::from_literal<1024, detail::u8, false>(literal); }
+
+FWNBI_CONSTEXPR14 basic_integer< 128, detail::u8, true> operator""_ll128d8(const char* literal) noexcept
+    { return detail::from_literal< 128, detail::u8, true>(literal); }
+FWNBI_CONSTEXPR14 basic_integer< 256, detail::u8, true> operator""_ll256d8(const char* literal) noexcept
+    { return detail::from_literal< 256, detail::u8, true>(literal); }
+FWNBI_CONSTEXPR14 basic_integer< 512, detail::u8, true> operator""_ll512d8(const char* literal) noexcept
+    { return detail::from_literal< 512, detail::u8, true>(literal); }
+FWNBI_CONSTEXPR14 basic_integer<1024, detail::u8, true> operator""_ll1024d8(const char* literal) noexcept
+    { return detail::from_literal<1024, detail::u8, true>(literal); }
+
 #define FWNBI_UINT128_C(literal)  literal ## _ull128
 #define FWNBI_UINT256_C(literal)  literal ## _ull256
 #define FWNBI_UINT512_C(literal)  literal ## _ull512

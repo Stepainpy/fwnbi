@@ -112,8 +112,10 @@ Available `constexpr` function since C++14.
 
 ## Namespace `fwnbi::literals`
 
-`_ull128`/`_ull256`/`_ull512`/`_ull1024` - unsigned  
-`_ll128`/`_ll256`/`_ll512`/`_ll1024` - signed
+`_ull(128/256/512/1024)` - unsigned  
+`_ll(128/256/512/1024)` - signed  
+`_ull(128/256/512/1024)d8` - unsigned with digit type `u8`  
+`_ll(128/256/512/1024)d8` - signed with digit type `u8`
 
 ## Namespace `std`
 
