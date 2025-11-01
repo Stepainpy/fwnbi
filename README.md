@@ -23,6 +23,8 @@ Available `constexpr` function since C++14.
 `double_digit_type` - type with width twice as wide as `digit_type`  
 `reference` - equal `digit_type&`  
 `const_reference` - equal `const digit_type&`  
+`pointer` - equal `digit_type*`  
+`const_pointer` - equal `const digit_type*`  
 `iterator` - equal `digit_type*`  
 `const_iterator` - equal `const digit_type*`
 
@@ -73,7 +75,7 @@ Available `constexpr` function since C++14.
 `void swap(basic_integer<...>&)` - swap value of current integer and argument
 
 **Range methods:**  
-`[const] digit_type* data() [const]` - return [const] pointer to begin of digit array  
+`[const_]pointer data() [const]` - return [const] pointer to begin of digit array  
 `[const_]iterator begin() [const]` - return begin [const] iterator for digits  
 `const_iterator cbegin() const` - return begin const iterator for digits  
 `[const_]iterator end() [const]` - return end [const] iterator for digits  

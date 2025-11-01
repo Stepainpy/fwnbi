@@ -215,8 +215,11 @@ public:
 
     using       reference =       digit_type&;
     using const_reference = const digit_type&;
-    using       iterator  =       digit_type*;
-    using const_iterator  = const digit_type*;
+    using       pointer   =       digit_type*;
+    using const_pointer   = const digit_type*;
+
+    using       iterator =       pointer;
+    using const_iterator = const_pointer;
 
 public:
     static constexpr size_t   bit_width = Bits;
@@ -371,7 +374,7 @@ public:
         const basic_integer<BitsU, DigitT, Signed>& upper,
         const basic_integer<BitsL, DigitT, Signed>& lower
     ) noexcept -> detail::enable_if_t<BitsU + BitsL == Bits, void> {
-        digit_type* middle =
+        pointer middle =
         detail::copy(lower.digits, lower.digit_count, digits);
         detail::copy(upper.digits, upper.digit_count, middle);
     }
@@ -411,8 +414,8 @@ public:
     }
 
 public:
-    FWNBI_CONSTEXPR14       digit_type* data()       noexcept { return digits; }
-    FWNBI_CONSTEXPR14 const digit_type* data() const noexcept { return digits; }
+    FWNBI_CONSTEXPR14       pointer data()       noexcept { return digits; }
+    FWNBI_CONSTEXPR14 const_pointer data() const noexcept { return digits; }
 
     FWNBI_CONSTEXPR14       iterator  begin()       noexcept { return digits; }
     FWNBI_CONSTEXPR14 const_iterator  begin() const noexcept { return digits; }
