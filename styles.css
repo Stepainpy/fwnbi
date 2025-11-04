@@ -3,7 +3,8 @@ body {
     --bg-color: #222224;
     --sb-fg-color: #383838;
     --sb-bg-color: #1f1f1f;
-    --bottom-gap: 15px;
+    --gap: 24px;
+    --gap-grp: 8px;
     --max-width: 800px;
 
     margin: 0;
@@ -20,23 +21,39 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: var(--bottom-gap);
+    gap: var(--gap);
     max-width: var(--max-width);
+
+    & .right {
+        margin-left: auto;
+    }
+    & div.group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-grp);
+    }
 }
 
 code.hljs {
     font-size: 15px;
     border-radius: 8px;
+    border: 1px solid #181818;
     max-width: var(--max-width);
     font-family: Consolas, Monaco, monospace;
     scrollbar-width: thin;
     scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
 }
 
-h1, h2, p, pre {
-    margin: 0;
+a.button {
+    padding: 8px 15px;
+    border: 1px solid #181818;
+    border-radius: 5px;
+    color: var(--fg-color);
+    background-color: var(--sb-fg-color);
+    text-decoration: none;
+    width: fit-content;
 }
 
-hr {
-    width: 100%;
+h1, h2, p, a, pre {
+    margin: 0;
 }

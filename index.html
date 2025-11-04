@@ -11,10 +11,11 @@
 </head>
 <body>
     <main>
-        <h2 style="text-align: center;">FWNBI &mdash; fixed-width N-bit integers</h2><hr/>
-        <p>Implements class template for arbitrary width integers and additional functions for them.</p><hr/>
-        <p>Using example:</p>
-        <pre><code class="language-cpp">#include "fwnbi.hpp"
+        <h2 style="text-align: center;">FWNBI &mdash; fixed-width N-bit integers</h2>
+        <p>Implements class template for arbitrary width integers and additional functions for them.</p>
+        <div class="group">
+            <p>Usage example:</p>
+            <pre><code class="language-cpp">#include "fwnbi.hpp"
 #include &lt;iostream>
 
 using namespace fwnbi::literals;
@@ -30,9 +31,12 @@ fwnbi::uint256_t factorial(int x) {
 
 int main() {
     std::cout &lt;&lt; "50! = " &lt;&lt; factorial(50) &lt;&lt; std::endl;
-}</code></pre>
-    <p>Output:</p>
-    <pre><code class="language-plaintext">50! = 30414093201713378043612608166064768844377641568960512000000000000</code></pre>
+}</code></pre></div>
+        <div class="group">
+            <p>Output:</p>
+            <pre><code class="language-plaintext">50! = 30414093201713378043612608166064768844377641568960512000000000000</code></pre>
+        </div>
+        <a class="button right" href="https://github.com/Stepainpy/fwnbi">Go back to GitHub</a>
     </main>
     <script>hljs.highlightAll();</script>
 </body>
