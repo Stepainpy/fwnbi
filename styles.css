@@ -1,0 +1,42 @@
+body {
+    --fg-color: #f8f8f8;
+    --bg-color: #222224;
+    --sb-fg-color: #383838;
+    --sb-bg-color: #1f1f1f;
+    --bottom-gap: 15px;
+    --max-width: 800px;
+
+    margin: 0;
+    font-size: 17px;
+    color: var(--fg-color);
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI Regular', sans-serif;
+}
+
+main {
+    margin: 0 auto;
+    padding: 8px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--bottom-gap);
+    max-width: var(--max-width);
+}
+
+code.hljs {
+    font-size: 15px;
+    border-radius: 8px;
+    max-width: var(--max-width);
+    font-family: Consolas, Monaco, monospace;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
+}
+
+h1, h2, p, pre {
+    margin: 0;
+}
+
+hr {
+    width: 100%;
+}
