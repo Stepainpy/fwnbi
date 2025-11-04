@@ -54,6 +54,6 @@ a.button {
     width: fit-content;
 }
 
-h1, h2, p, a, pre {
+h1, h2, p, a, pre, ul, li {
     margin: 0;
 }

@@ -12,7 +12,16 @@
 <body>
     <main>
         <h2 style="text-align: center;">FWNBI &mdash; fixed-width N-bit integers</h2>
-        <p>Implements class template for arbitrary width integers and additional functions for them.</p>
+        <div class="group">
+            <p>Implements class template for arbitrary width integers and additional functions for them.</p>
+            <p>Features of library API:</p>
+            <ul>
+                <li>supported C++11 and greater</li>
+                <li>supported <code>constexpr</code> since C++14</li>
+                <li>using Karatsuba algorithm for number &times; number multiplication</li>
+                <li>using peasant multiplication for number &times; digit multiplication</li>
+            </ul>
+        </div>
         <div class="group">
             <p>Usage example:</p>
             <pre><code class="language-cpp">#include "fwnbi.hpp"
