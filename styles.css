@@ -3,6 +3,8 @@
     --bg-color: #222224;
     --sb-fg-color: #383838;
     --sb-bg-color: #1f1f1f;
+    --border-color: #181818;
+    --tip-color: #909090;
     --max-width: 800px;
     --gap: 24px;
     --gap-grp: 8px;
@@ -43,7 +45,7 @@ main {
 
 code.hljs {
     max-width: var(--max-width);
-    border: 1px solid #181818;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
 
     font-family: Consolas, Monaco, monospace;
@@ -54,7 +56,7 @@ code.hljs {
 }
 
 a.button {
-    border: 1px solid #181818;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     width: fit-content;
     padding: 8px 15px;
@@ -62,4 +64,34 @@ a.button {
     text-decoration: none;
     color: var(--fg-color);
     background-color: var(--sb-fg-color);
+}
+
+span.since {
+    color: var(--tip-color);
+    font-size: var(--code-size);
+}
+
+table {
+    border-collapse: collapse;
+
+    & > caption {
+        text-align: left;
+        padding: 6px;
+        padding-top: 0;
+    }
+}
+
+td {
+    padding: 6px;
+    border-top: 2px solid var(--border-color);
+
+    tr:last-child > & {
+        border-bottom: 2px solid var(--border-color);
+    }
+    &.name {
+        width: 30%;
+    }
+    &.descr {
+        width: 70%;
+    }
 }
