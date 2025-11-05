@@ -4,7 +4,9 @@
     --sb-fg-color: #383838;
     --sb-bg-color: #1f1f1f;
     --border-color: #181818;
-    --tip-color: #909090;
+    --note-color: #909090;
+    --link-color: #8888f8;
+
     --max-width: 800px;
     --gap: 24px;
     --gap-grp: 8px;
@@ -55,6 +57,15 @@ code.hljs {
     scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
 }
 
+a {
+    color: var(--link-color);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: 1px underline;
+    }
+}
+
 a.button {
     border: 1px solid var(--border-color);
     border-radius: 5px;
@@ -66,8 +77,8 @@ a.button {
     background-color: var(--sb-fg-color);
 }
 
-span.since {
-    color: var(--tip-color);
+span.note {
+    color: var(--note-color);
     font-size: var(--code-size);
 }
 
