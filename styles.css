@@ -1,20 +1,28 @@
-body {
+:root {
     --fg-color: #f8f8f8;
     --bg-color: #222224;
     --sb-fg-color: #383838;
     --sb-bg-color: #1f1f1f;
+    --max-width: 800px;
     --gap: 24px;
     --gap-grp: 8px;
-    --max-width: 800px;
+    --text-size: 17px;
+    --code-size: 15px;
+}
 
+body, h1, h2, p, a, pre, ul, li {
     margin: 0;
-    font-size: 17px;
+}
+
+body {
     color: var(--fg-color);
     background-color: var(--bg-color);
     font-family: 'Segoe UI Regular', sans-serif;
+    font-size: var(--text-size);
 }
 
 main {
+    max-width: var(--max-width);
     margin: 0 auto;
     padding: 8px;
 
@@ -22,7 +30,6 @@ main {
     flex-direction: column;
     justify-content: center;
     gap: var(--gap);
-    max-width: var(--max-width);
 
     & .right {
         margin-left: auto;
@@ -35,25 +42,24 @@ main {
 }
 
 code.hljs {
-    font-size: 15px;
-    border-radius: 8px;
-    border: 1px solid #181818;
     max-width: var(--max-width);
+    border: 1px solid #181818;
+    border-radius: 8px;
+
     font-family: Consolas, Monaco, monospace;
+    font-size: var(--code-size);
+
     scrollbar-width: thin;
     scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
 }
 
 a.button {
-    padding: 8px 15px;
     border: 1px solid #181818;
     border-radius: 5px;
+    width: fit-content;
+    padding: 8px 15px;
+
+    text-decoration: none;
     color: var(--fg-color);
     background-color: var(--sb-fg-color);
-    text-decoration: none;
-    width: fit-content;
-}
-
-h1, h2, p, a, pre, ul, li {
-    margin: 0;
 }
