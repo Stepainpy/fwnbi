@@ -77,6 +77,23 @@ a.button {
     background-color: var(--sb-fg-color);
 }
 
+div.path {
+    padding: 5px;
+
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
+
+    font-size: 1.15em;
+    font-weight: bold;
+
+    & > span.delim {
+        margin: 0 3px;
+        font-weight: bolder;
+    }
+}
+
 span.note {
     color: var(--note-color);
     font-size: var(--code-size);

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
+    <title>digit - FWNBI</title>
+</head>
+<body>
+    <main>
+        <div class="path">
+            <a href="./index.html">Home</a>
+            <span class="delim">/</span>
+            <code>fwnbi::digit</code>
+        </div>
+        <pre><code class="language-cpp">using u8  = /* uint_fast8_t  or uint8_t , see below */;
+using u16 = /* uint_fast16_t or uint16_t, see below */;
+using u32 = /* uint_fast32_t or uint32_t, see below */;
+using u64 = /* uint_fast64_t or uint64_t, see below */;</code></pre>
+        <p>
+            Type alias <code>u<i>N</i></code> (where <i>N</i> is 8, 16, 32 and 64)
+            is <code>uint_fast<i>N</i>_t</code> if <code>UINT_FAST<i>N</i>_MAX</code> equal to
+            <code>UINT<i>N</i>_MAX</code>, otherwise is <code>uint<i>N</i>_t</code>.
+        </p>
+        <p>
+            This aliases using as template parameter <code>DigitT</code> in
+            <a href="cls_basic_integer.html"><code>basic_integer</code></a>.
+            If available GCC extension with type <code>__uint128_t</code> you can use
+            <code>u64</code> as valid value in <code>DigitT</code>, otherwise only
+            <code>u8</code>, <code>u16</code> and <code>u32</code>.
+        </p>
+    </main>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
