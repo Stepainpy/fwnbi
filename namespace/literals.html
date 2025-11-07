@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
     <title>literals - FWNBI</title>
 </head>
 <body>
@@ -13,7 +16,38 @@
             <span class="delim">/</span>
             <code>fwnbi::literals</code>
         </div>
-        <h1 id="banner">Work in progress</h1>
+        <div class="group">
+            <pre><code class="language-cpp">constexpr uint128_t operator""_ull128(const char*) noexcept;
+constexpr uint256_t operator""_ull256(const char*) noexcept;
+constexpr uint512_t operator""_ull512(const char*) noexcept;
+constexpr uint1024_t operator""_ull1024(const char*) noexcept;
+
+constexpr int128_t operator""_ll128(const char*) noexcept;
+constexpr int256_t operator""_ll256(const char*) noexcept;
+constexpr int512_t operator""_ll512(const char*) noexcept;
+constexpr int1024_t operator""_ll1024(const char*) noexcept;
+
+constexpr basic_integer&lt;128, digit::u8, false> operator""_ull128d8(const char*) noexcept;
+constexpr basic_integer&lt;256, digit::u8, false> operator""_ull256d8(const char*) noexcept;
+constexpr basic_integer&lt;512, digit::u8, false> operator""_ull512d8(const char*) noexcept;
+constexpr basic_integer&lt;1024, digit::u8, false> operator""_ull1024d8(const char*) noexcept;
+
+constexpr basic_integer&lt;128, digit::u8, true> operator""_ll128d8(const char*) noexcept;
+constexpr basic_integer&lt;256, digit::u8, true> operator""_ll256d8(const char*) noexcept;
+constexpr basic_integer&lt;512, digit::u8, true> operator""_ll512d8(const char*) noexcept;
+constexpr basic_integer&lt;1024, digit::u8, true> operator""_ll1024d8(const char*) noexcept;</code></pre>
+            <span class="note right"><code>constexpr</code> since C++14</span>
+        </div>
+        <p>
+            Collection of integer raw literal operators. Operators <code>_ull<i>N</i></code>
+            and <code>_ll<i>N</i></code> return <a href="../basic_integer/index.html"><code>
+            basic_integer</code></a> with width <code><i>N</i></code> and digit type usually
+            is <code>digit::u32</code> or <code>digit::u64</code>.
+            Operators <code>_ull<i>N</i>d8</code> and <code>_ll<i>N</i>d8</code> return
+            <code>basic_integer</code> with width <code><i>N</i></code> and digit type always
+            equal to <code>digit::u8</code>.
+        </p>
     </main>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
