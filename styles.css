@@ -6,12 +6,13 @@
     --border-color: #181818;
     --note-color: #909090;
     --link-color: #8888f8;
+    --select-color: #41464d;
 
     --max-width: 800px;
-    --gap: 24px;
-    --gap-grp: 8px;
     --text-size: 17px;
     --code-size: 15px;
+    --gap-big: 24px;
+    --gap-sml:  8px;
 }
 
 body, h1, h2, p, a, pre, ul, li {
@@ -21,8 +22,12 @@ body, h1, h2, p, a, pre, ul, li {
 body {
     color: var(--fg-color);
     background-color: var(--bg-color);
-    font-family: 'Segoe UI Regular', sans-serif;
+    font-family: 'Segoe UI Regular', 'Open Sans Regular', sans-serif;
     font-size: var(--text-size);
+
+    &::selection {
+        background-color: var(--select-color);
+    }
 }
 
 main {
@@ -33,7 +38,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: var(--gap);
+    gap: var(--gap-big);
 
     & .right {
         margin-left: auto;
@@ -41,7 +46,7 @@ main {
     & div.group {
         display: flex;
         flex-direction: column;
-        gap: var(--gap-grp);
+        gap: var(--gap-sml);
     }
 }
 
@@ -121,10 +126,6 @@ td {
     tr:last-child > & {
         border-bottom: 2px solid var(--border-color);
     }
-    &.name {
-        width: 30%;
-    }
-    &.descr {
-        width: 70%;
-    }
+    &.name  { width: 30%; }
+    &.descr { width: 70%; }
 }
