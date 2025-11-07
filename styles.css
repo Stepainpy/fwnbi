@@ -57,6 +57,11 @@ code.hljs {
     scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
 }
 
+h1#banner {
+    text-align: center;
+    margin-top: 40.4px;
+}
+
 a {
     color: var(--link-color);
     text-decoration: none;
