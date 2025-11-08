@@ -69,6 +69,43 @@ using  int1024_t =  intN_t&lt;1024>;</code></pre>
             in contiguous array. Digits order is little i.e. first digit with index 0 is
             least signification digit. For signedness used two's complement method.
         </p>
+        <table>
+            <caption><b>Nested types</b></caption>
+            <tbody>
+                <tr>
+                    <td><code>digit_type</code></td>
+                    <td><code>DigitT</code></td>
+                </tr>
+                <tr>
+                    <td><code>double_digit_type</code></td>
+                    <td>twice as wide as <code>digit_type</code> (i.e. 16 <b>&rarr;</b> 32)</td>
+                </tr>
+                <tr>
+                    <td><code>reference</code></td>
+                    <td><code>digit_type&</code></td>
+                </tr>
+                <tr>
+                    <td><code>const_reference</code></td>
+                    <td><code><span class="kw">const</span> digit_type&</code></td>
+                </tr>
+                <tr>
+                    <td><code>pointer</code></td>
+                    <td><code>digit_type*</code></td>
+                </tr>
+                <tr>
+                    <td><code>const_pointer</code></td>
+                    <td><code><span class="kw">const</span> digit_type*</code></td>
+                </tr>
+                <tr>
+                    <td><code>iterator</code></td>
+                    <td><code>digit_type*</code></td>
+                </tr>
+                <tr>
+                    <td><code>const_iterator</code></td>
+                    <td><code><span class="kw">const</span> digit_type*</code></td>
+                </tr>
+            </tbody>
+        </table>
     </main>
     <script>hljs.highlightAll();</script>
 </body>
