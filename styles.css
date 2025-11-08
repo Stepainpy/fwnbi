@@ -121,6 +121,11 @@ span.note {
 table {
     border-collapse: collapse;
 
+    display: block;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
+
     & > caption {
         text-align: left;
         padding: 6px;
