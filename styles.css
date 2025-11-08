@@ -7,6 +7,8 @@
     --note-color: #909090;
     --link-color: #8888f8;
     --select-color: #41464d;
+    --kw-color: #81a2be;
+    --lt-color: #cc6666;
 
     --max-width: 800px;
     --text-size: 17px;
@@ -65,6 +67,9 @@ code.hljs {
         color: inherit;
     }
 }
+
+.kw { color: var(--kw-color); }
+.lt { color: var(--lt-color); }
 
 h1#banner {
     text-align: center;
@@ -129,5 +134,8 @@ td {
 
     tr:last-child > & {
         border-bottom: 2px solid var(--border-color);
+    }
+    &:first-child {
+        width: 0%;
     }
 }

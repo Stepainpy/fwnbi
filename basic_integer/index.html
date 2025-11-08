@@ -21,6 +21,22 @@
     class  DigitT,
     bool   Signed
 > class basic_integer;</code></pre>
+        <div class="group">
+            <p>Several aliases</p>
+            <pre><code class="language-cpp">template &lt;size_t Bits, class DigitT = /* biggest digit type */&lt;Bits>>
+using uintN_t = basic_integer&lt;Bits, DigitT, false>;
+template &lt;size_t Bits, class DigitT = /* biggest digit type */&lt;Bits>>
+using  intN_t = basic_integer&lt;Bits, DigitT,  true>;</code></pre>
+            <pre><code class="language-cpp">using uint128_t  = uintN_t&lt; 128>;
+using uint256_t  = uintN_t&lt; 256>;
+using uint512_t  = uintN_t&lt; 512>;
+using uint1024_t = uintN_t&lt;1024>;
+
+using  int128_t  =  intN_t&lt; 128>;
+using  int256_t  =  intN_t&lt; 256>;
+using  int512_t  =  intN_t&lt; 512>;
+using  int1024_t =  intN_t&lt;1024>;</code></pre>
+        </div>
         <table>
             <caption><b>Template parameters</b></caption>
             <tbody>
@@ -33,12 +49,15 @@
                 </tr>
                 <tr>
                     <td><code>DigitT</code></td>
-                    <td>type, used for storage digits of integer</td>
+                    <td>
+                        type, used for storage digits of integer, valid types
+                        contained in namespace <a href="../namespace/digit.html">digit</a>
+                    </td>
                 </tr>
                 <tr>
                     <td><code>Signed</code></td>
                     <td>
-                        signedness, if equal to <code>true</code>, then integer
+                        signedness, if equal to <code class="lt">true</code>, then integer
                         is signed, else integer is unsigned
                     </td>
                 </tr>
@@ -46,9 +65,9 @@
         </table>
         <p>
             The class template emulating semantic of integer with signedness depended on
-            <code>Signed</code> and bit width equal to <code>Bits</code>. Digits order is
-            little i.e. first digit with index 0 is least signification digit. For
-            signedness used two's complement method.
+            <code>Signed</code> and bit width equal to <code>Bits</code>. Storage digits
+            in contiguous array. Digits order is little i.e. first digit with index 0 is
+            least signification digit. For signedness used two's complement method.
         </p>
     </main>
     <script>hljs.highlightAll();</script>
