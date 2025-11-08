@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
     <title>basic_integer - FWNBI</title>
 </head>
 <body>
@@ -13,7 +16,41 @@
             <span class="delim">/</span>
             <code>fwnbi::basic_integer</code>
         </div>
-        <h1 id="banner">Work in progress</h1>
+        <pre><code class="language-cpp no-title">template &lt;
+    size_t Bits,
+    class  DigitT,
+    bool   Signed
+> class basic_integer;</code></pre>
+        <table>
+            <caption><b>Template parameters</b></caption>
+            <tbody>
+                <tr>
+                    <td><code>Bits</code></td>
+                    <td>
+                        count of bits in integer, <code>Bits</code> must be a
+                        multiple of bit width of <code>DigitT</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>DigitT</code></td>
+                    <td>type, used for storage digits of integer</td>
+                </tr>
+                <tr>
+                    <td><code>Signed</code></td>
+                    <td>
+                        signedness, if equal to <code>true</code>, then integer
+                        is signed, else integer is unsigned
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            The class template emulating semantic of integer with signedness depended on
+            <code>Signed</code> and bit width equal to <code>Bits</code>. Digits order is
+            little i.e. first digit with index 0 is least signification digit. For
+            signedness used two's complement method.
+        </p>
     </main>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

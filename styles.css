@@ -60,6 +60,10 @@ code.hljs {
 
     scrollbar-width: thin;
     scrollbar-color: var(--sb-fg-color) var(--sb-bg-color);
+
+    &.no-title .hljs-title {
+        color: inherit;
+    }
 }
 
 h1#banner {
@@ -120,12 +124,10 @@ table {
 }
 
 td {
-    padding: 6px;
+    padding: 6px 8px;
     border-top: 2px solid var(--border-color);
 
     tr:last-child > & {
         border-bottom: 2px solid var(--border-color);
     }
-    &.name  { width: 30%; }
-    &.descr { width: 70%; }
 }
