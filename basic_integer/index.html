@@ -51,7 +51,7 @@ using  int1024_t =  intN_t&lt;1024>;</code></pre>
                     <td><code>DigitT</code></td>
                     <td>
                         type, used for storage digits of integer, valid types
-                        contained in namespace <a href="../namespace/digit.html">digit</a>
+                        contained in namespace <a href="../namespace/digit.html"><code>digit</code></a>
                     </td>
                 </tr>
                 <tr>
@@ -124,6 +124,106 @@ using  int1024_t =  intN_t&lt;1024>;</code></pre>
                 <tr>
                     <td><code><span class="kw">static&nbsp;constexpr&nbsp;bool</span>&nbsp;is_signed</code></td>
                     <td><code>Signed</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Static member functions</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="max.html"><code>max</code></a></td>
+                    <td>returns the maximum value</td>
+                </tr>
+                <tr>
+                    <td><a href="min.html"><code>min</code></a></td>
+                    <td>returns the minimum value</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Creation/destruction functions</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="ctor.html">(constructor)</a></td>
+                    <td>construct a <code>basic_integer</code></td>
+                </tr>
+                <tr>
+                    <td><a href="dtor.html">(destructor)</a></td>
+                    <td>destroy the <code>basic_integer</code></td>
+                </tr>
+                <tr>
+                    <td><a href="ops/assign.html"><code>operator=</code></a></td>
+                    <td>assigns values to the <code>basic_integer</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Member functions</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="sign_bit.html"><code>sign_bit</code></a></td>
+                    <td>returns the most signification bit</td>
+                </tr>
+                <tr>
+                    <td><a href="sign.html"><code>sign</code></a></td>
+                    <td>returns the sign of integer</td>
+                </tr>
+                <tr>
+                    <td><a href="width.html"><code>width</code></a></td>
+                    <td>returns the bit width of current value</td>
+                </tr>
+                <tr>
+                    <td><a href="clear.html"><code>clear</code></a></td>
+                    <td>sets all digits equal to zero</td>
+                </tr>
+                <tr>
+                    <td><a href="bit.html"><code>bit</code></a></td>
+                    <td>get/set bit by index</td>
+                </tr>
+                <tr>
+                    <td><a href="hex.html"><code>hex</code></a></td>
+                    <td>get/set hex digit by index</td>
+                </tr>
+                <tr>
+                    <td><a href="split.html"><code>split</code></a></td>
+                    <td>divide the integer into two parts</td>
+                </tr>
+                <tr>
+                    <td><a href="merge.html"><code>merge</code></a></td>
+                    <td>connects a integer of two parts</td>
+                </tr>
+                <tr>
+                    <td><a href="expand.html"><code>expand</code></a></td>
+                    <td>returns bigger width integer with zero filling new digits</td>
+                </tr>
+                <tr>
+                    <td><a href="add_with_carry.html"><code>add_with_carry</code></a></td>
+                    <td>addition with an input and output carry bit</td>
+                </tr>
+                <tr>
+                    <td><a href="data.html"><code>data</code></a></td>
+                    <td>returns a pointer to first digit</td>
+                </tr>
+                <tr>
+                    <td><a href="compare.html"><code>compare</code></a></td>
+                    <td>compares two integers</td>
+                </tr>
+                <tr>
+                    <td><a href="swap.html"><code>swap</code></a></td>
+                    <td>swaps two integers</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Iterators</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="begin.html"><code>begin<br>cbegin</code></a></td>
+                    <td>returns an iterator to the beginning</td>
+                </tr>
+                <tr>
+                    <td><a href="end.html"><code>end<br>cend</code></a></td>
+                    <td>returns an iterator to the end</td>
                 </tr>
             </tbody>
         </table>
