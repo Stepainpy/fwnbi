@@ -227,6 +227,70 @@ using  int1024_t =  intN_t&lt;1024>;</code></pre>
                 </tr>
             </tbody>
         </table>
+        <table>
+            <caption><b>Conversion operators</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="conv/bool.html"><code>operator&nbsp;bool</code></a></td>
+                    <td>converts to <code class="kw">bool</code></td>
+                </tr>
+                <tr>
+                    <td><a href="conv/digit_type.html"><code>operator&nbsp;digit_type</code></a></td>
+                    <td>converts to <code>digit_type</code></td>
+                </tr>
+                <tr>
+                    <td><a href="conv/double_digit_type.html"><code>operator&nbsp;double_digit_type</code></a></td>
+                    <td>converts to <code>double_digit_type</code></td>
+                </tr>
+                <tr>
+                    <td><a href="conv/other_int.html"><code>operator&nbsp;basic_integer&lt;...></code></a></td>
+                    <td>converts to another version of <code>basic_integer</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Operators</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="ops/subscript.html"><code>operator[]</code></a></td>
+                    <td>get/set digit value by index</td>
+                </tr>
+                <tr>
+                    <td><a href="ops/unary.html"><code>operator+<br>operator-<br>operator~</code></a></td>
+                    <td>integer unary operators</td>
+                </tr>
+                <tr>
+                    <td><a href="ops/crement.html"><code>operator++<br>operator--</code></a></td>
+                    <td>increment/decrement of integer</td>
+                </tr>
+                <tr>
+                    <td><a href="ops/binary_assign.html"><code>
+                        operator+=<br>operator-=<br>operator*=<br>operator/=<br>operator%=<br>
+                        operator&=<br>operator|=<br>operator^=<br>operator&lt;&lt;=<br>operator>>=
+                    </code></a></td>
+                    <td>compound assignment binary operators</td>
+                </tr>
+                <tr>
+                    <td><a href="ops/binary.html"><code>
+                        operator+<br>operator-<br>operator*<br>operator/<br>operator%<br>
+                        operator&<br>operator|<br>operator^<br>operator&lt;&lt;<br>operator>>
+                    </code></a></td>
+                    <td>integer binary operators</td>
+                </tr>
+                <tr>
+                    <td><a href="ops/compare.html"><code>
+                        operator==<br>
+                        operator!=&nbsp;<span class="note">until&nbsp;C++20</span><br>
+                        operator&lt;&nbsp;<span class="note">until&nbsp;C++20</span><br>
+                        operator&lt;=&nbsp;<span class="note">until&nbsp;C++20</span><br>
+                        operator>&nbsp;<span class="note">until&nbsp;C++20</span><br>
+                        operator>=&nbsp;<span class="note">until&nbsp;C++20</span><br>
+                        operator&lt;=>&nbsp;<span class="note">since&nbsp;C++20</span>
+                    </code></a></td>
+                    <td>integer comparison operators</td>
+                </tr>
+            </tbody>
+        </table>
     </main>
     <script>hljs.highlightAll();</script>
 </body>
