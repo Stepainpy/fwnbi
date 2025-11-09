@@ -291,6 +291,29 @@ using  int1024_t =  intN_t&lt;1024>;</code></pre>
                 </tr>
             </tbody>
         </table>
+        <div class="group">
+            <b>Example</b>
+            <pre><code class="language-cpp">#include "fwnbi.hpp"
+#include &lt;iostream>
+
+using namespace fwnbi::literals;
+
+fwnbi::uint256_t factorial(int x) {
+    if (x &lt; 0 || x > 57)
+        return fwnbi::uint256_t::max();
+    fwnbi::uint256_t::digit_type n = x + 1;
+    fwnbi::uint256_t out = 1_ull256;
+    while (n --> 1) out *= n;
+    return out;
+}
+
+int main() {
+    std::cout &lt;&lt; "50! = " &lt;&lt; factorial(50) &lt;&lt; std::endl;
+}</code></pre></div>
+        <div class="group">
+            <b>Output</b>
+            <pre><code class="language-plaintext">50! = 30414093201713378043612608166064768844377641568960512000000000000</code></pre>
+        </div>
     </main>
     <script>hljs.highlightAll();</script>
 </body>
