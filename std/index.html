@@ -13,7 +13,84 @@
             <span class="delim">/</span>
             integration in <code>std</code>
         </div>
-        <h1 id="banner">Work in progress</h1>
+        <p>
+            For comfortable work with <a href="../basic_integer/index.html"><code>basic_integer</code></a>
+            in Standard Template Library (STL) added function and structure overloads.
+        </p>
+        <table>
+            <caption><b>Functions</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="swap.html"><code>swap</code></a></td>
+                    <td>overload for <code>std::swap</code></td>
+                </tr>
+                <tr>
+                    <td><a href="op_shr.html"><code>operator>></code></a></td>
+                    <td>input from <code>std::basic_istream</code></td>
+                </tr>
+                <tr>
+                    <td><a href="op_shl.html"><code>operator&lt;&lt;</code></a></td>
+                    <td>output to <code>std::basic_ostream</code></td>
+                </tr>
+                <tr>
+                    <td><a href="to_string.html"><code>to_string</code></a></td>
+                    <td>converts integer to <code>std::string</code></td>
+                </tr>
+                <tr>
+                    <td><a href="strto.html"><code>strtoull<br>strtoll</code></a></td>
+                    <td>converts C-string to (un)signed integer</td>
+                </tr>
+                <tr>
+                    <td><a href="to_chars.html"><code>to_chars</code></a></td>
+                    <td>
+                        converts integer to fixed size character buffer
+                        <br><span class="note">since C++17</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="from_chars.html"><code>from_chars</code></a></td>
+                    <td>
+                        converts fixed size character buffer to integer
+                        <br><span class="note">since C++17</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption><b>Structures</b></caption>
+            <tbody>
+                <tr>
+                    <td><a href="is_integral.html"><code>is_integral</code></a></td>
+                    <td>returns <code>std::true_type</code> for integer type</td>
+                </tr>
+                <tr>
+                    <td><a href="is_signed.html"><code>is_unsigned<br>is_signed</code></a></td>
+                    <td>returns <code>std::true_type</code> for (un)signed integer type</td>
+                </tr>
+                <tr>
+                    <td><a href="make_signed.html"><code>make_unsigned<br>make_signed</code></a></td>
+                    <td>returns equivalent (un)signed version for integer type</td>
+                </tr>
+                <tr>
+                    <td><a href="num_lim.html"><code>numeric_limits</code></a></td>
+                    <td>information about integer type</td>
+                </tr>
+                <tr>
+                    <td><a href="hash.html"><code>hash</code></a></td>
+                    <td>
+                        returns <a href="https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function#FNV-1a_hash">
+                        FNV-1a</a> 64-bit hash from bytes of integer
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="formatter.html"><code>formatter</code></a></td>
+                    <td>
+                        used in functions <code>std::format</code>, <code>std::print</code> and etc.
+                        <br><span class="note">since C++20</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </main>
 </body>
 </html>
