@@ -21,8 +21,8 @@
         <div class="group">
             <pre><code class="language-cpp">template &lt;size_t B, class D, bool S>
 constexpr basic_integer&lt;B * 2, D, S> fullmul(
-    const basic_integer&ltB, D, S>& lhs,
-    const basic_integer&ltB, D, S>& rhs
+    const basic_integer&lt;B, D, S>& lhs,
+    const basic_integer&lt;B, D, S>& rhs
 ) noexcept;</code></pre>
             <span class="note right"><code>constexpr</code> since C++14</span>
         </div>
