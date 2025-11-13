@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
+    <title>abs - FWNBI</title>
+</head>
+<body>
+    <main>
+        <div class="path">
+            <a href="../index.html">Home</a>
+            <span class="delim">/</span>
+            <a href="index.html">list of functions</a>
+            <span class="delim">/</span>
+            <code>fwnbi::abs</code>
+        </div>
+        <div class="group">
+            <pre><code class="language-cpp">template &lt;size_t B, class D, bool S>
+constexpr basic_integer&lt;B, D, S> abs(basic_integer&ltB, D, S> value) noexcept;</code></pre>
+            <span class="note right"><code>constexpr</code> since C++14</span>
+        </div>
+        <p>Calculates absolute value of integer. If is unsigned, then do nothing.</p>
+    </main>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
