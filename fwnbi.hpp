@@ -1227,7 +1227,7 @@ sqr(const basic_integer<B, D, S>& value) noexcept {
 
 template <size_t B, class D> FWNBI_CONSTEXPR14 basic_integer<B, D, false>
 isqrt(const basic_integer<B, D, false>& value) noexcept {
-    auto out = basic_integer<B, D, false>(1) << ((value.width() + 1) >> 1);
+    auto out = basic_integer<B, D, false>(D(1)) << ((value.width() + 1) >> 1);
     while (true) {
         auto newout = (out + value / out) >> 1;
         if (newout >= out) return out;
@@ -1259,7 +1259,7 @@ FWNBI_CONSTEXPR14 basic_integer<B*2, D, false> lcm(
 ) noexcept {
     const basic_integer<B, D, false> gcd_res = gcd(lhs, rhs);
     if (!gcd_res) return {};
-    return fullmull(lhs / gcd_res, rhs);
+    return fullmul(lhs / gcd_res, rhs);
 }
 
 template <size_t Bits, class DigitT = detail::biggest_digit_t<Bits>>
