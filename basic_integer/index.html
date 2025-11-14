@@ -23,9 +23,9 @@
 > class basic_integer;</code></pre>
         <div class="group">
             <p>Several aliases</p>
-            <pre><code class="language-cpp">template &lt;size_t Bits, class DigitT = /* biggest digit type */&lt;Bits>>
+            <pre><code class="language-cpp no-title">template &lt;size_t Bits, class DigitT = /* biggest digit type */>
 using uintN_t = basic_integer&lt;Bits, DigitT, false>;
-template &lt;size_t Bits, class DigitT = /* biggest digit type */&lt;Bits>>
+template &lt;size_t Bits, class DigitT = /* biggest digit type */>
 using  intN_t = basic_integer&lt;Bits, DigitT,  true>;</code></pre>
             <pre><code class="language-cpp">using uint128_t  = uintN_t&lt; 128>;
 using uint256_t  = uintN_t&lt; 256>;
