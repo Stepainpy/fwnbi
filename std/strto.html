@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
+    <title>strtoull, strtoll - FWNBI</title>
+</head>
+<body>
+    <main>
+        <div class="path">
+            <a href="../index.html">Home</a>
+            <span class="delim">/</span>
+            <a href="index.html">integration in <code>std</code></a>
+            <span class="delim">/</span>
+            <code>std::strtoull, strtoll</code>
+        </div>
+        <div class="group">
+            <pre><code class="language-cpp">template &lt;size_t B, class D = /* biggest digit type */>
+constexpr fwnbi::basic_integer&lt;B, D, false> strtoull(
+    const char* str, char** end, int base) noexcept;
+template &lt;size_t B, class D = /* biggest digit type */>
+constexpr fwnbi::basic_integer&lt;B, D, true> strtoll(
+    const char* str, char** end, int base) noexcept;</code></pre>
+            <span class="note right"><code>constexpr</code> since C++14</span>
+        </div>
+        <p>
+            Converts a C-string to integer from <code>base</code> in range <code>[2, 36]</code>.
+            Semantic and expected behaviour as well as standard <code>std::strtoull</code> and <code>std::strtoll</code>.
+        </p>
+        <div class="group">
+            <b>Example</b>
+            <pre><code class="language-cpp">#include "fwnbi.hpp"
+#include &lt;iostream>
+
+int main() {
+    char* tail = nullptr;
+    fwnbi::uint128_t value = std::strtoull&lt;128>("   0000012345jrl", &tail, 16);
+    std::cout &lt;&lt; "Received value: " &lt;&lt; value &lt;&lt; '\n';
+    std::cout &lt;&lt; "String tail: " &lt;&lt; tail &lt;&lt; '\n';
+}</code></pre>
+        </div>
+        <div class="group">
+            <b>Output</b>
+            <pre><code class="language-plaintext">Received value: 74565
+String tail: jrl</code></pre>
+        </div>
+    </main>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
