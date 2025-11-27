@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/hybrid.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
+    <title>to_chars - FWNBI</title>
+</head>
+<body>
+    <main>
+        <div class="path">
+            <a href="../index.html">Home</a>
+            <span class="delim">/</span>
+            <a href="index.html">integration in <code>std</code></a>
+            <span class="delim">/</span>
+            <code>std::to_chars</code>
+        </div>
+        <div class="group">
+            <pre><code class="language-cpp">template &lt;size_t B, class D, bool S>
+constexpr to_chars_result to_chars(
+    char* first, char* last, const fwnbi::basic_integer&lt;B, D, S>& value, int base = 10
+) noexcept;</code></pre>
+            <span class="note right">since C++17</span>
+        </div>
+        <p>Converts a integer to char buffer <code>[first, last)</code>.</p>
+    </main>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
